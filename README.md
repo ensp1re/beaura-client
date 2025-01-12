@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BeAura ✨💇‍♂️💇‍♀️
 
-## Getting Started
+Welcome to **BeAura**! An AI-powered tool to help you find the best haircut for you. This project is currently focused on the frontend, with backend integration coming soon.
 
-First, run the development server:
+## Tech Stack 🛠️
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Next.js**: The React framework for production.
+- **React**: A JavaScript library for building user interfaces.
+- **Yup**: A JavaScript schema builder for value parsing and validation.
+- **Shadcn**: A component library for building beautiful and accessible user interfaces.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure 📁
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `/components`: Reusable React components.
+- `/lib`: Utility functions and helpers.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Getting Started 🚀
 
-## Learn More
+1. **Clone the repository**:
+    ```bash
+    git clone https://github.com/yourusername/beaura-client.git
+    cd beaura-client
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Run the development server**:
+    ```bash
+    npm run dev
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Open your browser**:
+    Navigate to [http://localhost:3000](http://localhost:3000) to see the app in action.
 
-## Deploy on Vercel
+## Contributing 🤝
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) for more details.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License 📄
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+Happy coding! 💻
