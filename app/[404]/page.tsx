@@ -1,9 +1,10 @@
 import React, { FC, ReactElement } from 'react'
+import NotFoundComponent from '../components/NotFoundComponent';
 
 const NotFound: FC = (): ReactElement => {
     return (
-        <div>NotFound</div>
+        <NotFoundComponent />
     )
 }
 
-export default NotFound
+export default NotFound;

@@ -19,3 +19,13 @@ export interface IBenefitProps {
   title: string;
   isIncluded: boolean;
 }
+
+
+export interface IImageHome {
+  id: number;
+  src: string;
+  user: string;
+  likes: number;
+  shares: number;
+  height: number;
+}

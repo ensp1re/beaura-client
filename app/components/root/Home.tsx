@@ -1,0 +1,109 @@
+'use client';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { images } from '@/constants/constants'
+import { IImageHome } from '@/interfaces/root.interface'
+import { Filter, Search } from 'lucide-react'
+import Image from 'next/image'
+import React, { FC, ReactElement, useEffect } from 'react'
+
+const Home: FC = (): ReactElement => {
+
+    // just placeholders
+    const filters = ["Coquette", "Abstract", "Trending", "Sport"]
+
+    useEffect(() => {
+        document.title = "Home | BeAura"
+    }, [])
+
+
+    return (
+        <div className="p-4 sm:p-6 lg:p-8 animate-in fade-in duration-500">
+            {/* Search and Filters */}
+            <div className="mb-6 space-y-4">
+                <div className="flex items-center gap-4">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                            placeholder="Search"
+                            className="pl-9"
+                        />
+                    </div>
+                    <Select>
+                        <SelectTrigger className="w-full flex items-center gap-2 sm:w-auto">
+                            <Filter className="h-4 w-4" />
+                            <SelectValue placeholder="Filter" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem key={"all"} value="all">All</SelectItem>
+                            {filters.map((filter) => (
+                                <SelectItem key={filter} value={filter}>
+                                    {filter}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                    {filters.map((filter) => (
+                        <Button
+                            key={filter}
+                            variant="outline"
+                            className="rounded-full"
+                            size="sm"
+                        >
+                            {filter}
+                        </Button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Masonry Grid */}
+            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
+                {images.map((image: IImageHome) => (
+                    <div
+                        key={image.id}
+                        className="break-inside-avoid mb-4 group relative overflow-hidden rounded-lg bg-background transition-all duration-300 hover:shadow-lg"
+                    >
+                        <div
+                            className="relative w-full"
+                            style={{ height: image.height }}
+                        >
+                            <Image
+                                src={image.src}
+                                alt="Gallery image"
+                                fill
+                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div className="absolute bottom-0 left-0 right-0 p-4">
+                                <div className="flex items-center justify-between text-white">
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="h-6 w-6">
+                                            <AvatarImage src="/placeholder.svg" />
+                                            <AvatarFallback>NT</AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-sm font-medium">{image.user}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-sm">
+                                        <span>❤ {image.likes}</span>
+                                        <span>↗ {image.shares}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+
+    )
+}
+
+export default Home

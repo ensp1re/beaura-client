@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import React, { FC, ReactElement, useEffect } from "react";
+import Home from "../components/root/Home";
 
-const iS_LOGGED_IN: boolean = false;
+const iS_LOGGED_IN: boolean = true;
 
 const RootPage: FC = (): ReactElement => {
     const router = useRouter();
@@ -17,11 +18,8 @@ const RootPage: FC = (): ReactElement => {
 
     return (
         <>
-            {/* <LogoutModal  />
-    <Home /> */}
-            <div>
-                Home
-            </div>
+            {/* <LogoutModal /> */}
+            <Home />
         </>
     );
 };

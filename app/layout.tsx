@@ -5,6 +5,8 @@ import { Raleway } from "next/font/google";
 import "./globals.css";
 // import ErrorBoundler from "@/components/shared/error/ErrorBoundler";
 import Head from "next/head";
+import { Provider } from "react-redux";
+import { store } from "@/lib/store";
 // import { Provider } from "react-redux";
 // import { store } from "@/lib/store";
 
@@ -23,7 +25,7 @@ const Layout: FC<LayoutProps> = ({ children }): React.ReactElement => {
     // <ErrorBoundler
     //   fallback={<div>Something went wrong. Please try again later.</div>}
     // >
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <Head>
         <title>BeAura</title>
 
@@ -36,9 +38,9 @@ const Layout: FC<LayoutProps> = ({ children }): React.ReactElement => {
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
       </Head>
       <body className={`bg-slate-50 ${raleway.className} custom-scroll`}>
-        {/* <Provider store={store}> */}
-        {children}
-        {/* </Provider> */}
+        <Provider store={store}>
+          {children}
+        </Provider>
       </body>
     </html>
     // </ErrorBoundler>
