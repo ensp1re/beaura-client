@@ -3,11 +3,13 @@ import { createSlice } from "@reduxjs/toolkit";
 interface UIState {
   isOpen: boolean;
   isModalLogoutOpen: boolean;
+  headerName: string;
 }
 
 const initialState: UIState = {
   isOpen: false,
   isModalLogoutOpen: false,
+  headerName: "",
 };
 
 const uiSlice = createSlice({
@@ -26,9 +28,12 @@ const uiSlice = createSlice({
     openModalLogout: (state) => {
       state.isModalLogoutOpen = !state.isModalLogoutOpen;
     },
+    change: (state, action) => {
+      state.headerName = action.payload;
+    }
   },
 });
 
-export const { open, close, toggle, openModalLogout } = uiSlice.actions;
+export const { open, close, toggle, openModalLogout, change } = uiSlice.actions;
 
 export default uiSlice.reducer;

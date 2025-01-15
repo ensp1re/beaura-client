@@ -6,7 +6,7 @@ import { RxScissors } from "react-icons/rx";
 export const navLinks: NavLink[] = [
   {
     title: "Home",
-    href: "/",
+    href: "/home",
     icon: FaHome,
   },
   {
@@ -160,3 +160,45 @@ export const images: IImageHome[] = [
 ];
 
 
+
+export const aspectRatioOptions = {
+  "1:1": {
+    aspectRatio: "1:1",
+    label: "Square (1:1)",
+    width: 1000,
+    height: 1000,
+  },
+  "3:4": {
+    aspectRatio: "3:4",
+    label: "Standard Portrait (3:4)",
+    width: 1000,
+    height: 1334,
+  },
+  "9:16": {
+    aspectRatio: "9:16",
+    label: "Phone Portrait (9:16)",
+    width: 1000,
+    height: 1778,
+  },
+};
+
+export const reviews = [
+  {
+    image: "/assets/ava1.jpg",
+    username: "anna",
+    nickname: "Anna",
+    review: "I love this app! It's so easy to use and the results are amazing!",
+  },
+  {
+    image: "/assets/ava2.jpg",
+    username: "sophia",
+    nickname: "Sophia",
+    review: "Fantastic app! It has transformed my look completely. Highly recommend!",
+  },
+  {
+    image: "/assets/ava3.jpg",
+    username: "emma",
+    nickname: "Emma",
+    review: "Great experience! The transformations are very realistic and fun to try.",
+  },
+]

@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
       "i.pinimg.com",
       "cdn.shopify.com", // Added domain
       "avatars.githubusercontent.com", // Added domain
+      "hebbkx1anhila5yf.public.blob.vercel-storage.com",
     ],
   },
   eslint: {

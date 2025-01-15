@@ -12,6 +12,7 @@ import { RootState, useAppDispatch, useAppSelector } from '@/lib/store';
 import { toggle } from '@/lib/reducers/uiSlice';
 import { ThemeToggle } from './ThemeToggle';
 import { cn } from '@/lib/utils';
+import LogoutModal from '../modals/LogoutModal';
 
 const Sidebar: FC = (): ReactElement => {
 
@@ -38,7 +39,7 @@ const Sidebar: FC = (): ReactElement => {
             />
             <div
                 className={cn(
-                    "fixed inset-y-0 left-0 z-50 w-64 bg-background p-6 shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:shadow-none",
+                    "fixed inset-y-0 left-0 z-50 w-64 bg-background border-r p-6 shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:shadow-none",
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
@@ -83,10 +84,12 @@ const Sidebar: FC = (): ReactElement => {
                 </nav>
 
                 <div className="absolute bottom-6 left-6 right-6">
-                    <Button variant="ghost" className="w-full justify-start mb-4">
-                        <LogOut className="w-5 h-5 mr-3" />
-                        Logout
-                    </Button>
+                    <LogoutModal>
+                        <Button variant="ghost" className="w-full flex justify-start">
+                            <LogOut className="w-5 h-5 mr-3" />
+                            Logout
+                        </Button>
+                    </LogoutModal>
                     <ThemeToggle />
                 </div>
             </div>

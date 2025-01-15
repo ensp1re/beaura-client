@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { images } from '@/constants/constants'
 import { IImageHome } from '@/interfaces/root.interface'
+import { change } from '@/lib/reducers/uiSlice';
+import { useAppDispatch } from '@/lib/store';
 import { Filter, Search } from 'lucide-react'
 import Image from 'next/image'
 import React, { FC, ReactElement, useEffect } from 'react'
@@ -15,9 +17,12 @@ const Home: FC = (): ReactElement => {
     // just placeholders
     const filters = ["Coquette", "Abstract", "Trending", "Sport"]
 
+    const dispatch = useAppDispatch();
+
     useEffect(() => {
         document.title = "Home | BeAura"
-    }, [])
+        dispatch(change("Home"))
+    }, [dispatch])
 
 
     return (

@@ -1,9 +1,10 @@
+import { GalleryComponent } from '@/app/components/root/Gallery'
 import React, { FC, ReactElement } from 'react'
 
 const Gallery: FC = (): ReactElement => {
   return (
-    <div>Gallery</div>
+    <GalleryComponent />
   )
 }
 
-export default Gallery
+export default Gallery;

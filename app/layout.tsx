@@ -1,30 +1,19 @@
 "use client";
 
 import React, { FC } from "react";
-import { Raleway } from "next/font/google";
 import "./globals.css";
-// import ErrorBoundler from "@/components/shared/error/ErrorBoundler";
 import Head from "next/head";
 import { Provider } from "react-redux";
 import { store } from "@/lib/store";
-// import { Provider } from "react-redux";
-// import { store } from "@/lib/store";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Fonts from "@/lib/fonts";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-const raleway = Raleway({
-  display: "swap",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-});
-
 const Layout: FC<LayoutProps> = ({ children }): React.ReactElement => {
   return (
-    // <ErrorBoundler
-    //   fallback={<div>Something went wrong. Please try again later.</div>}
-    // >
     <html lang="en" suppressHydrationWarning>
       <Head>
         <title>BeAura</title>
@@ -37,9 +26,11 @@ const Layout: FC<LayoutProps> = ({ children }): React.ReactElement => {
 
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
       </Head>
-      <body className={`bg-slate-50 ${raleway.className} custom-scroll`}>
+      <body className={`bg-slate-50 ${Fonts.raleway.className} custom-scroll`}>
         <Provider store={store}>
-          {children}
+          <ProtectedRoute>
+            {children}
+          </ProtectedRoute>
         </Provider>
       </body>
     </html>

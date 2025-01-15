@@ -6,6 +6,7 @@ import Fonts from "@/lib/fonts";
 import Sidebar from "../components/root/Sidebar";
 import Header from "../components/root/Header";
 import ThemeProvider from "../components/root/ThemeProvider";
+import { ToastContainer } from "react-toastify";
 
 export default function MainLayout({
     children,
@@ -15,6 +16,7 @@ export default function MainLayout({
     return (
         <ThemeProvider attribute={'class'} defaultTheme="system" enableSystem>
             <div className={`bg-background flex h-screen overflow-hidden ${Fonts.getInter()}`}>
+                <ToastContainer />
                 <Sidebar />
                 <main className="flex-1 flex flex-col overflow-hidden  lg:pl-64">
                     <Header />

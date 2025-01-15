@@ -29,3 +29,10 @@ export interface ResetPasswordFormProps {
   password: string;
   confirmPassword: string;
 }
+
+export interface IAuthRedux {
+  _id: string,
+  username: string,
+  email: string,
+  role: string,
+}
