@@ -85,23 +85,25 @@ export default function WorkspaceHeader() {
                             </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuContent align="end" className="w-56" onClick={() => setActiveSection(null)}>
                         <DropdownMenuLabel>
                             <div className="flex flex-col space-y-1">
                                 <p className="text-sm font-medium leading-none">John Doe</p>
                                 <p className="text-xs leading-none text-muted-foreground">john@example.com</p>
                             </div>
                         </DropdownMenuLabel>
-                        <DropdownMenuItem>
-                            <Link href="/profile/alex">Profile</Link>
+                        <DropdownMenuItem asChild className="cursor-pointer hover:bg-accent hover:text-accent-foreground">
+                            <Link href="/profile">Profile</Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
+                        <DropdownMenuItem asChild className="cursor-pointer hover:bg-accent hover:text-accent-foreground">
                             <Link href="/settings">Settings</Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            Sign out
+                        <DropdownMenuItem asChild className="cursor-pointer hover:bg-accent hover:text-accent-foreground">
+                            <Link href={"/billing"}>
+                                Billing
+                            </Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

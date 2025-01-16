@@ -15,6 +15,9 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useAppDispatch } from "@/lib/store"
 import { change } from "@/lib/reducers/uiSlice"
+import { useSearchParams } from "next/navigation"
+import { Textarea } from "@/components/ui/textarea"
+
 
 
 
@@ -23,12 +26,21 @@ export default function ImageTransformer() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [showInput, setShowInput] = useState(false);
+    const [isPremium, setIsPremium] = useState(false);
+
+    const searchParams = useSearchParams();
+    const prompt = searchParams.get('prompt');
+
+
+
+
 
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         dispatch(change("Change Haircut"))
-    }, [dispatch])
+        setIsPremium(false);
+    }, [dispatch, setIsPremium])
 
     const [data, setData] = useState<ITransformationData>({
         title: "",
@@ -36,6 +48,16 @@ export default function ImageTransformer() {
         tags: [],
         selectedImage: "",
     });
+
+    useEffect(() => {
+        if (prompt) {
+            setData((
+                prev) => ({
+                    ...prev,
+                    prompt: prompt,
+                }))
+        }
+    }, [prompt])
 
 
     const addToData = (key: string, value: string) => {
@@ -45,7 +67,6 @@ export default function ImageTransformer() {
         }));
     };
 
-    console.log(data, addToData);
 
 
     const handleFileChange = () => {
@@ -74,6 +95,50 @@ export default function ImageTransformer() {
     const handleButtonClick = () => {
         fileInputRef.current?.click(); // Programmatically open the file input dialog
     };
+
+    const [isDragActive, setIsDragActive] = useState<boolean>(false);
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsDragActive(true);
+    };
+
+    const handleDragEnter = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsDragActive(true);
+    };
+
+    const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsDragActive(false);
+    };
+
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsDragActive(false);
+
+        if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+            const file = event.dataTransfer.files[0];
+            try {
+                const validTypes = ["image/png", "image/jpg", "image/jpeg"];
+                if (!validTypes.includes(file.type)) {
+                    setError("Invalid file type. Please upload a PNG, JPG, or JPEG file.");
+                    setSelectedFile(null);
+                    return;
+                }
+                setSelectedFile(file);
+                setError(null);
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError("An unexpected error occurred");
+                }
+            }
+        }
+    };
+
+
+
 
 
 
@@ -126,14 +191,24 @@ export default function ImageTransformer() {
                                 />
                             </div>
 
+
+                            {/* 
+                                Later add a feature that allows to improve prompt by AI 
+                                Add autotagging using ai
+                            */}
+
+
                             {/* Genres */}
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Prompt</label>
                                 <div className="flex flex-wrap gap-2">
-                                    <Input
+                                    <Textarea
+                                        style={{ resize: "none" }}
                                         placeholder="Make my hair bald..."
-                                        className="w-full mb-2"
+                                        className="w-full mb-2 h-32"
                                         value={data.prompt}
+                                        minLength={10}
+                                        maxLength={500}
                                         onChange={(e: ChangeEvent) => addToData("prompt", (e.target as HTMLInputElement).value)}
                                     />
                                 </div>
@@ -199,8 +274,11 @@ export default function ImageTransformer() {
                                 <Select
                                     onValueChange={(value) => addToData("aspectRation", value)}
                                     defaultValue="1:1"
+                                    disabled={!isPremium}
                                 >
-                                    <SelectTrigger className="w-full">
+                                    <SelectTrigger className="w-full" title={
+                                        isPremium ? "Select size" : "Upgrade to premium to unlock this feature"
+                                    }>
                                         <SelectValue placeholder="Select size" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -214,12 +292,17 @@ export default function ImageTransformer() {
                             </div>
                             {/* Add better quality */}
                             <div className="space-y-2">
-                                <Label className="flex items-center space-x-2 cursor-pointer">
+                                <Label className={`flex items-center space-x-2 cursor-pointer
+                                                                                ${!isPremium ? "cursor-not-allowed" : ""} `}>
                                     <Checkbox
-                                        className="form-checkbox h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary"
+                                        className={`form-checkbox h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary *:
+                                            }`}
                                         onChange={(e) => addToData("premiumQuality", (e.target as HTMLInputElement).checked ? "true" : "false")}
+                                        disabled={!isPremium}
                                     />
-                                    <span className="text-sm font-medium text-gray-700">Improve Quality <span className="text-yellow-500">★</span></span>
+                                    <span className={`text-sm font-medium ${!isPremium ? " cursor-not-allowed text-gray-500" : ""}`}>
+                                        Improve Quality <span className="text-yellow-500">★</span>
+                                    </span>
                                 </Label>
                             </div>
                         </div>
@@ -230,7 +313,15 @@ export default function ImageTransformer() {
                         {/* Sample Upload */}
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Sample</label>
-                            <Card onClick={handleButtonClick} className="border-2 cursor-pointer border-dashed p-8">
+                            <Card
+                                onClick={handleButtonClick}
+                                onDragOver={handleDragOver}
+                                onDragEnter={handleDragEnter}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                className={`border-2 cursor-pointer p-8 transition-colors duration-200 ${isDragActive ? "border-primary bg-primary/10" : "border-dashed"
+                                    }`}
+                            >
                                 <input
                                     type="file"
                                     accept=".png, .jpg, .jpeg"
@@ -266,7 +357,7 @@ export default function ImageTransformer() {
                         </div>
                         {error && <p className="text-red-500 text-sm">{error}</p>}
                         {/* Create Button */}
-                        <Button className="w-full">Create</Button>
+                        <Button className="w-full">Apply</Button>
                     </Card>
                 </div>
             </div >

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { LogOut, Star, X } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { FC, ReactElement } from 'react'
 import { navLinks } from '@/constants/constants';
 import { NavLink } from '@/interfaces/root.interface';
@@ -13,12 +13,16 @@ import { toggle } from '@/lib/reducers/uiSlice';
 import { ThemeToggle } from './ThemeToggle';
 import { cn } from '@/lib/utils';
 import LogoutModal from '../modals/LogoutModal';
+import { useTheme } from 'next-themes';
 
 const Sidebar: FC = (): ReactElement => {
 
     const pathname = usePathname();
 
+    const router = useRouter();
     const isOpen = useAppSelector((state: RootState) => state.ui.isOpen);
+
+    const { theme } = useTheme();
 
 
     const dispatch = useAppDispatch();
@@ -44,11 +48,12 @@ const Sidebar: FC = (): ReactElement => {
                 )}
             >
                 <div className="flex items-center justify-between mb-6">
-                    <Link href="/" className="flex items-center">
+                    <Link href="/home" className="flex gap-1 items-center">
                         <Image
-                            src="/assets/beaura.png"
+                            src={theme === "dark" ? "/assets/beaura_dark.png" : "/assets/beaura.png"}
                             alt="BeauraAI"
                             width={32}
+                            className='relative bottom-[2px]'
                             height={32} />
                         <span className="text-xl font-bold">BeauraAI</span>
                     </Link>
@@ -57,7 +62,9 @@ const Sidebar: FC = (): ReactElement => {
                     </Button>
                 </div>
 
-                <Button variant="default" className="w-full mb-6">
+                <Button
+                    onClick={() => router.push("/transformation/haircut")}
+                    variant="default" className="w-full mb-6">
                     <Star className="w-4 h-4 mr-2" />
                     Create
                 </Button>

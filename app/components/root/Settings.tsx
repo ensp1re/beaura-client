@@ -38,9 +38,23 @@ const defaultValues: Partial<ProfileFormValues> = {
   showLikedTransformations: false,
 }
 
+export interface ChangePasswordProps {
+  currentPassword: string
+  newPassword: string
+  confirmNewPassword: string
+}
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(8),
+  newPassword: z.string().min(8),
+  confirmNewPassword: z.string().min(8),
+})
+
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState<boolean>(true)
   const [marketingEmails, setMarketingEmails] = useState<boolean>(false)
+
+
 
   const dispatch = useAppDispatch();
 
@@ -52,6 +66,15 @@ export default function SettingsPage() {
     resolver: zodResolver(profileFormSchema),
     defaultValues,
   })
+
+  const changePasswordForm = useForm<ChangePasswordProps>({
+    resolver: zodResolver(changePasswordSchema),
+  })
+
+  const onChangePasswordSubmit = (data: any) => {
+    console.log(data);
+    changePasswordForm.reset();
+  };
 
   function onSubmit(data: ProfileFormValues) {
     // In a real app, you would update the profile here
@@ -74,22 +97,53 @@ export default function SettingsPage() {
               <CardDescription>Manage your account details and preferences.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="john@example.com" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">New Password</Label>
-                <Input id="password" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm New Password</Label>
-                <Input id="confirm-password" type="password" />
-              </div>
+              <Form {...changePasswordForm}>
+                <form onSubmit={changePasswordForm.handleSubmit(onChangePasswordSubmit)} className="space-y-8">
+                  <FormField
+                    control={changePasswordForm.control}
+                    name="currentPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Current Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" {...field} value={field.value || ""} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={changePasswordForm.control}
+                    name="newPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>New Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" {...field} value={field.value || ""} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={changePasswordForm.control}
+                    name="confirmNewPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm New Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" {...field} value={field.value || ""} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type='submit'>Save Changes</Button>
+                </form>
+
+              </Form>
+
             </CardContent>
-            <CardFooter>
-              <Button>Save Changes</Button>
-            </CardFooter>
           </Card>
         </TabsContent>
         <TabsContent value="notifications">
@@ -187,22 +241,6 @@ export default function SettingsPage() {
                         </FormControl>
                         <FormDescription>
                           Brief description for your profile. Maximum 160 characters.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="email" />
-                        </FormControl>
-                        <FormDescription>
-                          Your email address is private and won&apos;t be shown on your profile.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

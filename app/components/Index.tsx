@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { SiteHeader } from "@/app/components/SiteHeader"
@@ -8,6 +10,7 @@ import { ArrowRight, CheckCircle2, ImageIcon, MessageSquare, Wand2 } from 'lucid
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { reviews } from "@/constants/constants"
 import { v4 as uuidv4 } from 'uuid'
+import { useEffect } from "react";
 
 
 
@@ -18,11 +21,17 @@ export const metadata = {
     openGraph: {
         title: 'BeauraAI - AI-Powered Haircut Transformations',
         description: 'Transform your look with AI-powered haircut visualizations',
-        images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
+        images: [{ url: '/assets/placeholder.jpg', width: 1200, height: 630 }],
     },
 }
 
+
 export default function Index() {
+
+    useEffect(() => {
+        document.title = metadata.title
+    }, [])
+
     return (
         <div className="flex flex-col min-h-screen">
             <SiteHeader />
@@ -36,7 +45,7 @@ export default function Index() {
                                     <span className="text-primary">✨ New:</span>
                                     <span className="ml-2">Advanced Style Customization</span>
                                 </div>
-                                <h1 className="text-4xl md:text-6xl font-bold tracking-tighter">
+                                <h1 className="text-4xl md:text-6xl font-bold tracking-tighter dark:text-white">
                                     Transform Your Look with AI Magic
                                 </h1>
                                 <p className="text-xl text-muted-foreground">

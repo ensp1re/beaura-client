@@ -29,7 +29,7 @@ export function SiteFooter() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/pricing" className="text-muted-foreground hover:text-foreground">
+                                <Link href="/plans" className="text-muted-foreground hover:text-foreground">
                                     Pricing
                                 </Link>
                             </li>

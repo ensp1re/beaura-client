@@ -21,7 +21,7 @@ const Header: FC = (): ReactElement => {
                     <Menu className="h-6 w-6" />
                 </Button>
                 <div className="flex-1">
-                    <h1 className="text-2xl font-semibold">{header}</h1>
+                    <h1 className="text-base md:text-2xl font-semibold">{header}</h1>
                 </div>
 
                 <div className="flex items-center gap-4">

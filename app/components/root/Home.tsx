@@ -4,18 +4,28 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { images } from '@/constants/constants'
+import { images as filterImage } from '@/constants/constants'
 import { IImageHome } from '@/interfaces/root.interface'
 import { change } from '@/lib/reducers/uiSlice';
 import { useAppDispatch } from '@/lib/store';
-import { Filter, Search } from 'lucide-react'
+import { Filter, Heart, Search, Share } from 'lucide-react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation';
 import React, { FC, ReactElement, useEffect } from 'react'
 
 const Home: FC = (): ReactElement => {
 
     // just placeholders
-    const filters = ["Coquette", "Abstract", "Trending", "Sport"]
+    const filters = [
+        "By date",
+        "By likes",
+        "By name",
+    ]
+
+
+    const [images, setImages] = React.useState<IImageHome[]>(filterImage);
+
+    const router = useRouter();
 
     const dispatch = useAppDispatch();
 
@@ -23,6 +33,29 @@ const Home: FC = (): ReactElement => {
         document.title = "Home | BeAura"
         dispatch(change("Home"))
     }, [dispatch])
+
+
+    const handleImageLike = (id: number) => {
+        // handle like
+        try {
+            console.log(id)
+            setTimeout(() => {
+                setImages((prevImages) => {
+                    return prevImages.map((image) => {
+                        if (image.id === id) {
+                            return {
+                                ...image,
+                                likes: image.likes + 1
+                            }
+                        }
+                        return image
+                    })
+                })
+            }, 2000);
+        } catch (error) {
+            console.log(error)
+        }
+    };
 
 
     return (
@@ -72,7 +105,10 @@ const Home: FC = (): ReactElement => {
                 {images.map((image: IImageHome) => (
                     <div
                         key={image.id}
-                        className="break-inside-avoid mb-4 group relative overflow-hidden rounded-lg bg-background transition-all duration-300 hover:shadow-lg"
+                        onClick={
+                            () => router.push(`/preview-transformation/${image.id}`)
+                        }
+                        className="break-inside-avoid cursor-pointer mb-4 group relative overflow-hidden rounded-lg bg-background transition-all duration-300 hover:shadow-lg"
                     >
                         <div
                             className="relative w-full"
@@ -89,16 +125,26 @@ const Home: FC = (): ReactElement => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <div className="absolute bottom-0 left-0 right-0 p-4">
                                 <div className="flex items-center justify-between text-white">
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-6 w-6">
-                                            <AvatarImage src="/placeholder.svg" />
+                                    <div className="flex items-center gap-2" onClick={(e) => { e.stopPropagation(); router.push(`/profile/${(image.user).toLowerCase()}`); }}>
+                                        <Avatar className="h-6 w-6 cursor-pointer">
+                                            <AvatarImage src="/assets/placeholder.jpg" />
                                             <AvatarFallback>NT</AvatarFallback>
                                         </Avatar>
-                                        <span className="text-sm font-medium">{image.user}</span>
+                                        <span className="text-sm font-medium cursor-pointer">{image.user}</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-sm">
-                                        <span>❤ {image.likes}</span>
-                                        <span>↗ {image.shares}</span>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={(e) => { e.stopPropagation(); handleImageLike(image.id as number); }}
+                                            className="flex items-center w-12 gap-1 transition-transform duration-300 hover:scale-110"
+                                        >
+                                            <Heart className="h-2 w-2" />
+                                            {image.likes}
+                                        </Button>
+                                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); }}>
+                                            <Share className="h-4 w-4" />
+                                        </Button>
                                     </div>
                                 </div>
                             </div>

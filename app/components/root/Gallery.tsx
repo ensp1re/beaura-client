@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FullSizeImageModal } from "./FullSizeImageModal"
 import { useAppDispatch } from '@/lib/store'
 import { change } from '@/lib/reducers/uiSlice'
+import { useRouter } from 'next/navigation'
 
 interface GalleryItem {
     id: string
@@ -68,6 +69,8 @@ export function GalleryComponent() {
     const [sexFilter, setSexFilter] = useState<string>("all")
 
     const dispatch = useAppDispatch();
+
+    const router = useRouter();
 
     useEffect(() => {
         dispatch(change("Gallery"))
@@ -134,7 +137,9 @@ export function GalleryComponent() {
                                     Preview
                                 </Button>
                             </Link>
-                            <Button size="sm" className="gap-2">
+                            <Button
+                                onClick={() => router.push(`/transformation/haircut?prompt=${encodeURIComponent(item.replaceWith)}`)}
+                                size="sm" className="gap-2">
                                 <Download className="h-4 w-4" />
                                 Use Template
                             </Button>

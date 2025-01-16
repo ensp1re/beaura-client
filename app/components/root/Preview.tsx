@@ -1,16 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from "next/link"
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Download, ArrowLeft, Undo, Redo } from 'lucide-react'
-import { Slider } from "@/components/ui/slider"
+import { Download, ArrowLeft } from 'lucide-react'
 import { FullSizeImageModal } from "@/app/components/root/FullSizeImageModal"
 import { useAppDispatch } from '@/lib/store'
 import { change } from '@/lib/reducers/uiSlice'
+import { BiBasket } from 'react-icons/bi'
+import { FaDownload } from 'react-icons/fa'
 
 interface GalleryItem {
   id: string
@@ -41,9 +41,14 @@ export default function PreviewTransformationComponent() {
   const params = useParams()
   const id = params.id as string
   const [item, setItem] = useState<GalleryItem | undefined>(undefined)
-  const [intensity, setIntensity] = useState(50)
+
+  const [isOwner, setIsOwner] = useState(false)
+
+  console.log(setIsOwner)
 
   const dispatch = useAppDispatch();
+
+  const router = useRouter();
 
   useEffect(() => {
     dispatch(change("Transformation Preview"))
@@ -57,11 +62,13 @@ export default function PreviewTransformationComponent() {
 
   return (
     <div className="container mx-auto p-6">
-      <Link href="/gallery" passHref>
-        <Button variant="ghost" className="mb-4">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Gallery
-        </Button>
-      </Link>
+      <Button
+        onClick={
+          () => router.back()
+        }
+        variant="ghost" className="mb-4">
+        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+      </Button>
 
       <Card className="overflow-hidden">
         <CardHeader>
@@ -88,38 +95,37 @@ export default function PreviewTransformationComponent() {
             </div>
           </div>
           <div className="mt-6">
-            <h3 className="font-semibold mb-2">Transformation Intensity</h3>
-            <Slider
-              value={[intensity]}
-              onValueChange={(value) => setIntensity(value[0])}
-              max={100}
-              step={1}
-            />
-            <p className="text-sm text-muted-foreground mt-2">Intensity: {intensity}%</p>
-          </div>
-          <div className="mt-6">
             <h3 className="font-semibold mb-2">Transformation Details</h3>
             <p className="text-sm text-muted-foreground">{item.replaceWith}</p>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <div>
-            <Button variant="outline" size="sm" className="mr-2">
-              <Undo className="h-4 w-4 mr-2" />
-              Undo
-            </Button>
-            <Button variant="outline" size="sm">
-              <Redo className="h-4 w-4 mr-2" />
-              Redo
-            </Button>
-          </div>
-          <Button size="sm" className="gap-2">
+        <CardFooter className={`grid grid-cols-1 gap-4
+            ${isOwner ? "md:grid-cols-3" : "md:grid-cols-2"}
+          `}>
+          {
+            isOwner && (
+              <Button variant="destructive" size="sm" className="col-span-1 md:col-span-1">
+                <BiBasket className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            )
+          }
+          <Button
+            variant="outline"
+            size="sm"
+            className="col-span-1 md:col-span-1"
+            onClick={() => router.push(`/transformation/haircut?prompt=${encodeURIComponent(item.replaceWith)}`)}
+          >
+            <FaDownload className="h-4 w-4 mr-2" />
+            Use prompt
+          </Button>
+          <Button size="sm" className="col-span-1 md:col-span-1 gap-2">
             <Download className="h-4 w-4" />
             Download Result
           </Button>
         </CardFooter>
-      </Card>
-    </div>
+      </Card >
+    </div >
   )
 }
 
