@@ -5,7 +5,6 @@ import "./globals.css";
 import Head from "next/head";
 import { Provider } from "react-redux";
 import { store } from "@/lib/store";
-import ProtectedRoute from "./components/ProtectedRoute";
 import Fonts from "@/lib/fonts";
 
 interface LayoutProps {
@@ -28,9 +27,7 @@ const Layout: FC<LayoutProps> = ({ children }): React.ReactElement => {
       </Head>
       <body className={`bg-slate-50 ${Fonts.raleway.className} custom-scroll`}>
         <Provider store={store}>
-          <ProtectedRoute>
-            {children}
-          </ProtectedRoute>
+          {children}
         </Provider>
       </body>
     </html>

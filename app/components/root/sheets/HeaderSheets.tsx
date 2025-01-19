@@ -15,6 +15,7 @@ import { Download, Heart } from 'lucide-react'
 import { useState } from "react"
 import Link from 'next/link'
 import { TransformationCard } from "@/app/components/root/TransformationCard"
+import { RootState, useAppSelector } from "@/lib/store"
 
 // Sample data (in a real app, this would come from an API)
 const likedTransformations = [
@@ -29,6 +30,9 @@ const downloadedTransformations = [
 
 export default function WorkspaceHeader() {
     const [activeSection, setActiveSection] = useState<string | null>(null)
+
+    const auth = useAppSelector((state: RootState) => state.auth.user)
+
 
     return (
         <div className="flex items-center justify-between p-4 border-b">
@@ -80,16 +84,18 @@ export default function WorkspaceHeader() {
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="rounded-full">
                             <Avatar className="h-8 w-8">
-                                <AvatarImage src="https://avatars.githubusercontent.com/u/58823075?v=4" alt="Profile" />
+                                <AvatarImage src={
+                                    auth?.profilePicture || "/icons/placeholder.jpg"
+                                } alt="Profile" />
                                 <AvatarFallback>JD</AvatarFallback>
                             </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56" onClick={() => setActiveSection(null)}>
                         <DropdownMenuLabel>
-                            <div className="flex flex-col space-y-1">
-                                <p className="text-sm font-medium leading-none">John Doe</p>
-                                <p className="text-xs leading-none text-muted-foreground">john@example.com</p>
+                            <div className="flex flex-col space-y-2 gap-1">
+                                {((auth?.nickname || auth?.username || 'Guest').charAt(0).toUpperCase() + (auth?.nickname || auth?.username || 'Guest').slice(1))}
+                                <p className="text-xs leading-none text-muted-foreground">{auth?.email}</p>
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuItem asChild className="cursor-pointer hover:bg-accent hover:text-accent-foreground">

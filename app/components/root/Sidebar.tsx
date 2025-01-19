@@ -50,7 +50,7 @@ const Sidebar: FC = (): ReactElement => {
                 <div className="flex items-center justify-between mb-6">
                     <Link href="/home" className="flex gap-1 items-center">
                         <Image
-                            src={theme === "dark" ? "/assets/beaura_dark.png" : "/assets/beaura.png"}
+                            src={theme === "dark" || theme === "system" ? "/assets/beaura_dark.png" : "/assets/beaura.png"}
                             alt="BeauraAI"
                             width={32}
                             className='relative bottom-[2px]'
@@ -92,8 +92,8 @@ const Sidebar: FC = (): ReactElement => {
 
                 <div className="absolute bottom-6 left-6 right-6">
                     <LogoutModal>
-                        <Button variant="ghost" className="w-full flex justify-start">
-                            <LogOut className="w-5 h-5 mr-3" />
+                        <Button variant="ghost" className="w-full flex justify-start px-3 py-2">
+                            <LogOut className="w-5 h-5 mr-1" />
                             Logout
                         </Button>
                     </LogoutModal>

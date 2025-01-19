@@ -15,7 +15,7 @@ const urbanist = Urbanist({
 
 const AuthLayout: FC<AuthLayoutProps> = ({ children }): ReactElement => {
     return (
-        <div className={`min-w-screen w-full h-screen flex flex-row items-center justify-center ${urbanist.className}`}>
+        <div suppressHydrationWarning className={`min-w-screen w-full h-screen flex flex-row items-center justify-center ${urbanist.className}`}>
             <ToastContainer />
             {children}
         </div>

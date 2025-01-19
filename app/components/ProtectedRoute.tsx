@@ -1,10 +1,11 @@
 'use client';
 
-import { IAuthRedux } from '@/interfaces/auth.interface';
-import { login } from '@/lib/reducers/authSlice';
-import { useAppDispatch } from '@/lib/store';
+import { logout, updateUser } from '@/lib/reducers/authSlice';
+import { RootState, useAppDispatch, useAppSelector } from '@/lib/store';
+import { saveToSessionStorage } from '@/lib/utils';
+// import { RootState, useAppSelector } from '@/lib/store';
+import { useCheckAuthenticationQuery } from '@/services/auth.service';
 import React, { FC, ReactElement, ReactNode, useEffect } from 'react'
-import { Navigate } from 'react-router-dom';
 
 
 interface IProtectedRouteProps {
@@ -13,40 +14,57 @@ interface IProtectedRouteProps {
 
 const ProtectedRoute: FC<IProtectedRouteProps> = ({ children }): ReactElement => {
 
-    const dispatch = useAppDispatch();
+    const auth = useAppSelector((state: RootState) => state.auth.user)
 
     const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
+    const dispatch = useAppDispatch();
+
+
+    const { data, isError, isLoading: isDataLoading, status } = useCheckAuthenticationQuery(undefined, {
+        skip: auth?._id === null,
+    });
+
 
 
 
     useEffect(() => {
-
-        setTimeout(() => {
+        setIsLoading(true);
+        if (data && data.data && status === "fulfilled" && !isDataLoading && !isError) {
+            setIsAuthenticated(true);
+            console.log(data)
+            dispatch(updateUser(
+                data.data
+            ))
             setIsLoading(false);
-        }, 2000);
-
-        const data: IAuthRedux = {
-            _id: "1",
-            username: "test",
-            email: "test@example.com",
-            role: "free",
+            saveToSessionStorage(
+                JSON.stringify(true),
+                JSON.stringify(data.username),
+            );
         }
-        setIsAuthenticated(true);
-        dispatch(login(data));
-    }, [dispatch])
 
-    if (isLoading) {
+        if (isError) {
+            setIsLoading(false);
+            setIsAuthenticated(false);
+            dispatch(logout());
+        }
+
+
+    }, [data, dispatch, isDataLoading, isError, status]);
+
+
+
+    if (isLoading || status === "pending") {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-500">
+            <div suppressHydrationWarning className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full z-2 h-12 w-12 border-t-2 border-b-4 dark:border-gray-300">
                 </div>
             </div>
-        )
+        );
     }
 
-    if (!isAuthenticated && !isLoading) {
-        <Navigate to="/login" />
+    if (!isAuthenticated && !isLoading && !isDataLoading) {
+        window.location.href = '/login';
     }
 
     return (

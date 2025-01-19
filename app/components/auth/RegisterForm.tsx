@@ -1,28 +1,39 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RegisterFormProps } from '@/interfaces/auth.interface';
+import { IAuthRedux, RegisterFormProps } from '@/interfaces/auth.interface';
+import { loginWithGoogle } from '@/lib/firebase';
+import { login } from '@/lib/reducers/authSlice';
+import { useAppDispatch } from '@/lib/store';
+import { saveToSessionStorage } from '@/lib/utils';
 import { registerScheme } from '@/lib/validations/auth.scheme';
+import { useGoogleLoginMutation, useSignUpMutation } from '@/services/auth.service';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Link from 'next/link'
+import { useRouter } from 'next/navigation';
 import React, { ChangeEvent, FC, ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
+import { toast } from 'react-toastify';
 
 const RegisterForm: FC = (): ReactElement => {
-
-
     const [type, setType] = useState<string>("password");
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-
     const [email, setEmail] = useState<string>('');
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [registerMutation, { isLoading, isError, isSuccess }] = useSignUpMutation();
+    const [googleMutation] = useGoogleLoginMutation();
+    const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
 
+    const dispatch = useAppDispatch();
+
+    const router = useRouter();
 
     const {
         handleSubmit,
@@ -38,20 +49,90 @@ const RegisterForm: FC = (): ReactElement => {
         }
     });
 
-    const onSubmit = (data: RegisterFormProps) => {
-        setIsLoading(true);
-        setTimeout(() => {
-            console.log(data);
-            setIsLoading(false);
-        }, 2000);
+    const onSubmit = async (data: RegisterFormProps) => {
+        try {
+            const { confirmPassword, ...toRegister } = data;
+            const response = await registerMutation(toRegister).unwrap();
+
+            if (response) {
+                toast.success((response.message || 'Registration successful') as string);
+                const user = response.user;
+                saveToSessionStorage(
+                    JSON.stringify(true),
+                    JSON.stringify(user?.username)
+                );
+                const reduxData: IAuthRedux = {
+                    _id: user?._id || null,
+                    username: user?.username,
+                    email: user?.email,
+                    role: user?.role,
+                    status: user?.status,
+                };
+                dispatch(login({
+                    user: reduxData,
+                    accessToken: response.accessToken,
+                    refreshToken: response.refreshToken,
+                }));
+
+                router.push("/home");
+            } else {
+                toast.error("Something went wrong!");
+            }
+        } catch (err) {
+            console.log(err);
+            const error = err as { data: { message: string } };
+            toast.error(`${error.data.message}`);
+        }
     };
 
 
+    const handleGoogleLogin = async (): Promise<void> => {
+        try {
+            setIsGoogleLoading(true);
+            const idToken: string = await loginWithGoogle();
+            const response = await googleMutation(idToken).unwrap();
+            if (response) {
+                toast.success((response.message || 'Login successful') as string)
+                const user = response.user;
+                saveToSessionStorage(
+                    JSON.stringify(true),
+                    JSON.stringify(user?.username)
+                );
+                const reduxData: IAuthRedux = {
+                    _id: user?._id || null,
+                    username: user?.username,
+                    email: user?.email,
+                    role: user?.role,
+                    status: user?.status,
+                }
+                dispatch(login({
+                    user: reduxData,
+                    accessToken: response.accessToken,
+                    refreshToken: response.refreshToken,
+                }));
+
+                router.push("/home")
+            } else {
+                toast.error("Something went wrong!")
+                console.log(response)
+            }
+
+        } catch (error) {
+            console.log('Login failed', error)
+        } finally {
+            setIsGoogleLoading(false);
+        }
+    }
+
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className='w-96 space-y-4 mx-4 text-gray-600'>
-            <h2 className='text-xl font-semibold text-center mb-2 mt-5'>Create an account</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className='w-96 space-y-3 mx-2 text-gray-600'>
+            <h2 className='text-xl font-semibold text-center mb-1 mt-1'>Create an account</h2>
             <div className='flex flex-col space-y-4 mb-4'>
-                <div className='flex w-full items-center justify-center gap-2 py-3 px-8 border border-gray-300 rounded-full bg-white cursor-pointer transition duration-300 hover:bg-gray-50'>
+                <div
+                    onClick={handleGoogleLogin}
+                    className='flex w-full items-center justify-center gap-2 py-3 px-8 border border-gray-300 rounded-full bg-white cursor-pointer transition duration-300 hover:bg-gray-50'>
+
                     <FcGoogle className='text-2xl' />
                     Continue with Google
                 </div>
@@ -141,22 +222,23 @@ const RegisterForm: FC = (): ReactElement => {
                     {errors.confirmPassword && <p className='text-red-500 text-sm mt-1'>{errors.confirmPassword.message}</p>}
                 </div>
             </div>
-            <Button className={
-                `w-full h-full bg-gray-800 text-white rounded-full text-center text-base font-semibold hover:bg-gray-700 ${isLoading ? 'cursor-not-allowed bg-gray-400' : ''} transition duration-300`
-            }>
+            <Button
+                disabled={isLoading || isGoogleLoading || !email || !username || !password || !confirmPassword}
+                className={
+                    `w-full h-full bg-gray-800 text-white rounded-full text-center text-base font-semibold hover:bg-gray-700 ${isLoading || isGoogleLoading || !email || !username || !password || !confirmPassword ? 'cursor-not-allowed bg-gray-400' : ''} transition duration-300`
+                }>
                 {
-                    isLoading ? (
+                    isLoading || isGoogleLoading ? (
                         <FaSpinner className='animate-spin m-2' />
                     ) : (
                         <span className='p-1'>Sign Up</span>
                     )
                 }
-
             </Button>
             <hr className='w-full border-gray-300 mx-2' />
 
             <div className='w-full text-center'>
-                <p className='pb-2 text-gray-500 text-base'>
+                <p className='pb-1 text-gray-500 text-base'>
 
                     Already have an account?
                 </p>

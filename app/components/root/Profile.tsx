@@ -3,57 +3,45 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RootState, useAppSelector } from "@/lib/store"
 import { Heart, Share2 } from 'lucide-react'
 import Image from "next/image"
 
-// This would come from your database in a real app
-const profile = {
-    username: "sarahstyle",
-    name: "Sarah Johnson",
-    avatar: "/assets/placeholder.jpg",
-    bio: "Hair transformation enthusiast | Digital Artist",
-    followers: 1234,
-    following: 567,
-    isPrivate: true,
-    transformations: [
-        {
-            id: 1,
-            title: "Summer Makeover",
-            image: "/assets/placeholder.jpg",
-            likes: 423,
-            isPublic: true
-        },
-        {
-            id: 2,
-            title: "Professional Look",
-            image: "/assets/placeholder.jpg",
-            likes: 289,
-            isPublic: true
-        }
-    ]
-}
 
 interface PublicProfilePageProps {
     isMyProfile: boolean;
 }
 
 export default function ProfilePage({ isMyProfile }: PublicProfilePageProps) {
+
+    const auth = useAppSelector((state: RootState) => state.auth.user)
+
     return (
         <div className="container mx-auto py-10">
             <Card>
                 <CardHeader>
                     <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                         <Avatar className="w-24 h-24">
-                            <AvatarImage src={profile.avatar} alt={profile.name} />
-                            <AvatarFallback>{profile.name[0]}</AvatarFallback>
+                            <AvatarImage src={
+                                auth?.profilePicture
+                                    ? auth.profilePicture
+                                    : "/icons/placeholder.jpg"
+                            } alt={
+                                auth?.username
+                            } />
+                            <AvatarFallback>{
+                                auth?.nickname || auth?.username.charAt(0).toUpperCase()
+                            }</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 space-y-2">
                             <div className="flex items-center gap-2">
-                                <CardTitle>{profile.name}</CardTitle>
-                                <Badge>{profile.isPrivate ? "Private Profile" : "Public Profile"}</Badge>
+                                <CardTitle>{
+                                    auth?.nickname || auth?.username
+                                }</CardTitle>
+                                <Badge>{auth?.isPrivate ? "Private Profile" : "Public Profile"}</Badge>
                             </div>
-                            <CardDescription className="text-base">@{profile.username}</CardDescription>
-                            <p className="text-muted-foreground">{profile.bio}</p>
+                            <CardDescription className="text-base">@{auth?.username}</CardDescription>
+                            <p className="text-muted-foreground">{auth?.bio}</p>
                         </div>
                         <Button variant="outline" size="icon">
                             <Share2 className="h-4 w-4" />
@@ -68,15 +56,15 @@ export default function ProfilePage({ isMyProfile }: PublicProfilePageProps) {
                         </TabsList>
                         <TabsContent value="transformations" className="mt-6">
                             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                {profile.transformations
+                                {auth?.transformations && auth.transformations
                                     .filter(transformation => isMyProfile || transformation.isPublic)
                                     .map((transformation) => (
                                         <Card key={transformation.id}>
                                             <CardContent className="p-0">
                                                 <div className="relative aspect-square">
                                                     <Image
-                                                        src={transformation.image}
-                                                        alt={transformation.title}
+                                                        src={transformation.toImage || "/icons/placeholder.jpg"}
+                                                        alt={transformation.title || "Transformation"}
                                                         fill
                                                         className="object-cover rounded-t-lg"
                                                     />
@@ -86,7 +74,7 @@ export default function ProfilePage({ isMyProfile }: PublicProfilePageProps) {
                                                     <div className="flex items-center gap-2 mt-2">
                                                         <Heart className="h-4 w-4 text-muted-foreground" />
                                                         <span className="text-sm text-muted-foreground">
-                                                            {transformation.likes}
+                                                            {transformation.likes?.length || 0}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -96,7 +84,7 @@ export default function ProfilePage({ isMyProfile }: PublicProfilePageProps) {
                             </div>
                         </TabsContent>
                         <TabsContent value="liked">
-                            {isMyProfile || !profile.isPrivate ? (
+                            {isMyProfile || !auth?.isPrivate ? (
                                 <div className="text-center py-12 text-muted-foreground">
                                     Liked transformations are private
                                 </div>

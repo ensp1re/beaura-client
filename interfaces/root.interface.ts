@@ -30,16 +30,42 @@ export interface IImageHome {
   height: number;
 }
 
+export interface IImageGallery {
+  id: number;
+  src: string;
+  user: string;
+  likes: number;
+  shares: number;
+  height: number;
+}
+
+export interface ILikeTransformationPayload {
+  transformationId: string;
+  userId: string;
+}
+
+export interface IShareTransformationPayload {
+  transformationId: string;
+  userId: string;
+}
+
 export interface ITransformationData {
-  userId?: string;
-  title: string;
-  prompt: string;
-  selectedImage: string;
+  id?: number;
+  userId: string | undefined;
+  title?: string;
+  prompt?: string;
+  selectedImage?: string;
   tags?: string[];
-  transformationType?: string;
+  transformationType?: string; // "GenerativeReplace" || "HaircutGallery" || "HaircutPrompt" || "3DModel" || "ImageToImage"
   aspectRatio?: string;
   isQuality?: boolean;
-
+  isPublic?: boolean;
+  fromImage?: string;
+  toImage?: string;
+  likes?: ILikeTransformationPayload[];
+  shares?: IShareTransformationPayload[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Response {
