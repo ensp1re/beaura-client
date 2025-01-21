@@ -27,12 +27,15 @@ const Home: FC = (): ReactElement => {
 
     const router = useRouter();
 
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         document.title = "Home | BeAura"
         dispatch(change("Home"))
     }, [dispatch])
+
+
 
 
     const handleImageLike = (id: number) => {
@@ -59,7 +62,7 @@ const Home: FC = (): ReactElement => {
 
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 animate-in fade-in duration-500">
+        <div suppressHydrationWarning className="p-4 sm:p-6 lg:p-8 animate-in fade-in duration-500">
             {/* Search and Filters */}
             <div className="mb-6 space-y-4">
                 <div className="flex items-center gap-4">

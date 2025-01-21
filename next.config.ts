@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       "unsplash.com",
       "storage.googleapis.com",
       "media.thefashionisto.com",
+      "lh3.googleusercontent.com",
       "i.pinimg.com",
       "cdn.shopify.com", // Added domain
       "avatars.githubusercontent.com", // Added domain

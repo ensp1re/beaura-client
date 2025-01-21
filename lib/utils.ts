@@ -28,14 +28,29 @@ export const getDataFromLocalStorage = (key: string): any => {
   return null;
 };
 
-export const saveToSessionStorage = (data: string, username: string): void => {
+export const saveToSessionStorage = (data: string, refreshToken: string): void => {
   if (typeof window === "undefined") return;
   window.sessionStorage.setItem('isLoggedIn', data);
-  window.sessionStorage.setItem('loggedInUser', username);
+  window.sessionStorage.setItem('refreshToken', refreshToken);
 };
 
 export const getDataFromSessionStorage = (key: string): any => {
   if (typeof window === "undefined") return null;
   const data = window.sessionStorage.getItem(key);
-  return data ? JSON.parse(data) : null; // Handle null safely
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch {
+      return data;
+    }
+  }
+  return null;
 };
+
+
+export const isTokenExpired = (token: string): boolean => {
+  if (!token) return true;
+  const payload = JSON.parse(atob(token.split(".")[1]));
+  const currentTime = Date.now() / 1000;
+  return payload.exp < currentTime;
+}

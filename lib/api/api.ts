@@ -3,7 +3,7 @@ import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../store";
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { logout, updateTokens } from "../reducers/authSlice";
-import { getDataFromSessionStorage } from "../utils";
+import { getDataFromLocalStorage, isTokenExpired } from "../utils";
 
 
 
@@ -30,8 +30,18 @@ const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
     let result = await baseQuery(args, api, extraOptions);
 
     if (result.error && result.error?.status === 401) {
-        const loggedInUsername: string = getDataFromSessionStorage("loggedInUser");
-        const refreshResult = await baseQuery(`/auth/refresh-token/${loggedInUsername}`, api, extraOptions);
+        const refreshToken: string = getDataFromLocalStorage("refreshToken") || "";
+
+        if (isTokenExpired(refreshToken)) {
+            api.dispatch(logout());
+            return result;
+        }
+
+        const refreshResult = await baseQuery({
+            url: `/auth/refresh-token`,
+            method: 'POST',
+            body: { refreshToken: refreshToken }
+        }, api, extraOptions);
         if (refreshResult.data) {
             api.dispatch(updateTokens({
                 accessToken: (refreshResult.data as { accessToken: string; }).accessToken,

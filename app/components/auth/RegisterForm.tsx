@@ -57,10 +57,16 @@ const RegisterForm: FC = (): ReactElement => {
             if (response) {
                 toast.success((response.message || 'Registration successful') as string);
                 const user = response.user;
-                saveToSessionStorage(
-                    JSON.stringify(true),
-                    JSON.stringify(user?.username)
-                );
+
+                if (response?.refreshToken) {
+                    saveToSessionStorage(
+                        JSON.stringify(true),
+                        JSON.stringify(response.refreshToken)
+                    );
+                } else {
+                    toast.error("Failed to save refresh token!");
+                }
+
                 const reduxData: IAuthRedux = {
                     _id: user?._id || null,
                     username: user?.username,

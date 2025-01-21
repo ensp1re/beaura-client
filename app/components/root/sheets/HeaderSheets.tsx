@@ -84,10 +84,12 @@ export default function WorkspaceHeader() {
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="rounded-full">
                             <Avatar className="h-8 w-8">
-                                <AvatarImage src={
-                                    auth?.profilePicture || "/icons/placeholder.jpg"
-                                } alt="Profile" />
-                                <AvatarFallback>JD</AvatarFallback>
+                                <AvatarImage
+                                    src={auth?.profilePicture || "/icons/placeholder.jpg"}
+                                    alt="Profile"
+                                    onError={(e) => (e.currentTarget.src = "/icons/placeholder.jpg")}
+                                />
+                                <AvatarFallback>{auth?.username[0].toUpperCase()}</AvatarFallback>
                             </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
