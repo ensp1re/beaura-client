@@ -4,31 +4,41 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { LoginFormProps } from '@/interfaces/auth.interface';
+import { IAuthRedux, LoginFormProps } from '@/interfaces/auth.interface';
+import { loginWithGoogle } from '@/lib/firebase';
+import { login } from '@/lib/reducers/authSlice';
+import { useAppDispatch } from '@/lib/store';
 import { loginScheme } from '@/lib/validations/auth.scheme';
+import { useGoogleLoginMutation, useLoginMutation } from '@/services/auth.service';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Link from 'next/link'
+import { useRouter } from 'next/navigation';
 import React, { ChangeEvent, FC, ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
+import { toast } from 'react-toastify';
 
 
 const LoginForm: FC = (): ReactElement => {
 
 
     const [type, setType] = useState<string>("password");
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [loginMutation, { isLoading }] = useLoginMutation();
+    const [googleMutation] = useGoogleLoginMutation();
+    const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
 
+    const dispatch = useAppDispatch();
+
+    const router = useRouter();
 
     const {
         handleSubmit,
         register,
         formState: { errors }
-    } = useForm({
+    } = useForm<LoginFormProps>({
         resolver: yupResolver(loginScheme),
         defaultValues: {
             emailOrUsername: '',
@@ -36,22 +46,90 @@ const LoginForm: FC = (): ReactElement => {
         }
     });
 
+    const onSubmit = async (data: LoginFormProps) => {
+        try {
 
+            const updatedData = {
+                credential: data.emailOrUsername,
+                password: data.password
+            }
 
-    const onSubmit = (data: LoginFormProps) => {
-        setIsLoading(true);
-        setTimeout(() => {
-            console.log(data);
-            setIsLoading(false);
-        }, 2000);
+            const response = await loginMutation(updatedData).unwrap();
+
+            if (response) {
+                toast.success('Login successful');
+                const user = response?.user;
+                const reduxData: IAuthRedux = {
+                    _id: user?._id || null,
+                    username: user?.username,
+                    email: user?.email,
+                    role: user?.role,
+                    status: user?.status,
+                }
+
+                dispatch(login({
+                    user: reduxData,
+                    accessToken: response.accessToken,
+                    refreshToken: response.refreshToken,
+                    isLoggedIn: true,
+                }));
+
+                router.push("/home")
+            } else {
+                toast.error('Login failed');
+            }
+
+        } catch (error) {
+            console.error(error);
+            toast.error('Login failed');
+
+        }
+
     };
+
+    const handleGoogleLogin = async (): Promise<void> => {
+        try {
+            setIsGoogleLoading(true);
+            const idToken: string = await loginWithGoogle();
+            const response = await googleMutation(idToken).unwrap();
+            if (response) {
+                toast.success((response.message || 'Login successful') as string)
+                const user = response.user;
+                const reduxData: IAuthRedux = {
+                    _id: user?._id || null,
+                    username: user?.username,
+                    email: user?.email,
+                    role: user?.role,
+                    status: user?.status,
+                }
+                dispatch(login({
+                    user: reduxData,
+                    accessToken: response.accessToken,
+                    refreshToken: response.refreshToken,
+                    isLoggedIn: true,
+                }));
+
+                router.push("/home")
+            } else {
+                toast.error("Something went wrong!")
+                console.log(response)
+            }
+
+        } catch (error) {
+            console.log('Login failed', error)
+        } finally {
+            setIsGoogleLoading(false);
+        }
+    }
 
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className='w-96 space-y-4 mx-4 text-gray-600'>
             <h2 className='text-xl font-semibold text-center mb-2 mt-5'>Log in to your account</h2>
             <div className='flex flex-col space-y-4 mb-4'>
-                <div className='flex w-full items-center justify-center gap-2 py-3 px-8 border border-gray-300 rounded-full bg-white cursor-pointer transition duration-300 hover:bg-gray-50'>
+                <div
+                    onClick={handleGoogleLogin}
+                    className='flex w-full items-center justify-center gap-2 py-3 px-8 border border-gray-300 rounded-full bg-white cursor-pointer transition duration-300 hover:bg-gray-50'>
                     <FcGoogle className='text-2xl' />
                     Continue with Google
                 </div>
@@ -130,10 +208,10 @@ const LoginForm: FC = (): ReactElement => {
                 Remember me
             </Label>
             <Button className={
-                `w-full h-full bg-gray-800 text-white rounded-full text-center text-base font-semibold hover:bg-gray-700 ${isLoading ? 'cursor-not-allowed bg-gray-400' : ''} transition duration-300`
+                `w-full h-full bg-gray-800 text-white rounded-full text-center text-base font-semibold hover:bg-gray-700 ${isLoading || isGoogleLoading ? 'cursor-not-allowed bg-gray-400' : ''} transition duration-300`
             }>
                 {
-                    isLoading ? (
+                    isLoading || isGoogleLoading ? (
                         <FaSpinner className='animate-spin m-2' />
                     ) : (
                         <span className='p-1'>Log In</span>

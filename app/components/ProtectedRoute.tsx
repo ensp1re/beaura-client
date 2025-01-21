@@ -1,8 +1,7 @@
 'use client';
 
-import { logout, updateUser } from '@/lib/reducers/authSlice';
+import { logout, updateIsLoggedIn, updateUser } from '@/lib/reducers/authSlice';
 import { RootState, useAppDispatch, useAppSelector } from '@/lib/store';
-import { saveToSessionStorage } from '@/lib/utils';
 // import { RootState, useAppSelector } from '@/lib/store';
 import { useCheckAuthenticationQuery } from '@/services/auth.service';
 import React, { FC, ReactElement, ReactNode, useEffect } from 'react'
@@ -16,7 +15,9 @@ const ProtectedRoute: FC<IProtectedRouteProps> = ({ children }): ReactElement =>
 
     const auth = useAppSelector((state: RootState) => state.auth.user)
 
-    const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
+    const refreshToken = useAppSelector((state: RootState) => state.auth.refreshToken);
+    const isLoggedIn = useAppSelector((state: RootState) => state.auth.isLoggedIn);
+
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
     const dispatch = useAppDispatch();
 
@@ -31,21 +32,15 @@ const ProtectedRoute: FC<IProtectedRouteProps> = ({ children }): ReactElement =>
     useEffect(() => {
         setIsLoading(true);
         if (data && data.data && status === "fulfilled" && !isDataLoading && !isError) {
-            setIsAuthenticated(true);
-            console.log(data)
             dispatch(updateUser(
                 data.data
             ))
+            dispatch(updateIsLoggedIn(true));
             setIsLoading(false);
-            saveToSessionStorage(
-                JSON.stringify(true),
-                JSON.stringify(data.username),
-            );
         }
 
         if (isError) {
             setIsLoading(false);
-            setIsAuthenticated(false);
             dispatch(logout());
         }
 
@@ -63,7 +58,7 @@ const ProtectedRoute: FC<IProtectedRouteProps> = ({ children }): ReactElement =>
         );
     }
 
-    if (!isAuthenticated && !isLoading && !isDataLoading) {
+    if (!isLoading && !isDataLoading && !isLoggedIn && refreshToken === null) {
         window.location.href = '/login';
     }
 

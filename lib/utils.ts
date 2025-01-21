@@ -28,7 +28,7 @@ export const getDataFromLocalStorage = (key: string): any => {
   return null;
 };
 
-export const saveToSessionStorage = (data: string, refreshToken: string): void => {
+export const saveToSessionStorage = (isAuthenticated: boolean, p0: boolean, data: string, p1: null, refreshToken: string): void => {
   if (typeof window === "undefined") return;
   window.sessionStorage.setItem('isLoggedIn', data);
   window.sessionStorage.setItem('refreshToken', refreshToken);

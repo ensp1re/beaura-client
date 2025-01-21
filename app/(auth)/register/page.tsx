@@ -1,23 +1,27 @@
 'use client';
 
+import AlreadyLoggedIn from '@/app/components/AlreadyLoggedIn';
 import RegisterComponent from '@/app/components/auth/RegisterComponent';
 import { RootState, useAppSelector } from '@/lib/store';
 import React, { FC, ReactElement, useEffect } from 'react'
 
 const Register: FC = (): ReactElement => {
 
-  const auth = useAppSelector((state: RootState) => state.auth.user)
+  const accessToken = useAppSelector((state: RootState) => state.auth.accessToken)
+  const refreshToken = useAppSelector((state: RootState) => state.auth.refreshToken);
 
 
 
   useEffect(() => {
     document.title = 'Register | Beaura'
+  }, [])
 
-    if (auth !== null) {
-      window.location.href = '/home'
-    }
+  if (refreshToken !== null || accessToken !== null) {
+    return (
+      <AlreadyLoggedIn />
+    )
+  }
 
-  }, [auth])
 
   return (
     <RegisterComponent />

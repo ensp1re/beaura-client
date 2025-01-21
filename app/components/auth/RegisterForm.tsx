@@ -9,7 +9,6 @@ import { IAuthRedux, RegisterFormProps } from '@/interfaces/auth.interface';
 import { loginWithGoogle } from '@/lib/firebase';
 import { login } from '@/lib/reducers/authSlice';
 import { useAppDispatch } from '@/lib/store';
-import { saveToSessionStorage } from '@/lib/utils';
 import { registerScheme } from '@/lib/validations/auth.scheme';
 import { useGoogleLoginMutation, useSignUpMutation } from '@/services/auth.service';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -58,15 +57,6 @@ const RegisterForm: FC = (): ReactElement => {
                 toast.success((response.message || 'Registration successful') as string);
                 const user = response.user;
 
-                if (response?.refreshToken) {
-                    saveToSessionStorage(
-                        JSON.stringify(true),
-                        JSON.stringify(response.refreshToken)
-                    );
-                } else {
-                    toast.error("Failed to save refresh token!");
-                }
-
                 const reduxData: IAuthRedux = {
                     _id: user?._id || null,
                     username: user?.username,
@@ -78,6 +68,7 @@ const RegisterForm: FC = (): ReactElement => {
                     user: reduxData,
                     accessToken: response.accessToken,
                     refreshToken: response.refreshToken,
+                    isLoggedIn: true,
                 }));
 
                 router.push("/home");
@@ -100,10 +91,6 @@ const RegisterForm: FC = (): ReactElement => {
             if (response) {
                 toast.success((response.message || 'Login successful') as string)
                 const user = response.user;
-                saveToSessionStorage(
-                    JSON.stringify(true),
-                    JSON.stringify(user?.username)
-                );
                 const reduxData: IAuthRedux = {
                     _id: user?._id || null,
                     username: user?.username,
@@ -115,6 +102,7 @@ const RegisterForm: FC = (): ReactElement => {
                     user: reduxData,
                     accessToken: response.accessToken,
                     refreshToken: response.refreshToken,
+                    isLoggedIn: true,
                 }));
 
                 router.push("/home")

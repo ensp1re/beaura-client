@@ -63,7 +63,10 @@ const Sidebar: FC = (): ReactElement => {
                 </div>
 
                 <Button
-                    onClick={() => router.push("/transformation/haircut")}
+                    onClick={() => {
+                        router.push("/transformation/haircut");
+                        toggleBtn();
+                    }}
                     variant="default" className="w-full mb-6">
                     <Star className="w-4 h-4 mr-2" />
                     Create
@@ -82,6 +85,7 @@ const Sidebar: FC = (): ReactElement => {
                                         ? "bg-accent text-accent-foreground"
                                         : "hover:bg-accent hover:text-accent-foreground"
                                 )}
+                                onClick={toggleBtn}
                             >
                                 <IconComponent className="w-5 h-5 mr-3" />
                                 <span className="text-sm font-medium">{item.title}</span>
