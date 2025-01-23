@@ -54,3 +54,7 @@ export const isTokenExpired = (token: string): boolean => {
   const currentTime = Date.now() / 1000;
   return payload.exp < currentTime;
 }
+
+export const toFirstCharUppercase = (name: string): string => {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};

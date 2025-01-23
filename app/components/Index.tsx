@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { SiteHeader } from "@/app/components/SiteHeader"
+import SiteHeader from "@/app/components/SiteHeader"
 import { SiteFooter } from "@/app/components/SiteFooter"
 import Image from "next/image"
 import Link from "next/link"

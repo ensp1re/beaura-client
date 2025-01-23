@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2 } from 'lucide-react'
-import { SiteHeader } from "../components/SiteHeader"
+import SiteHeader from "../components/SiteHeader"
 import { SiteFooter } from "../components/SiteFooter"
 
 export const metadata = {
@@ -56,7 +56,7 @@ export default function PricingPage() {
             <SiteHeader />
             <main className="flex-1">
                 <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white">
-                    <div className="container px-4 md:px-6">
+                    <div className="containe mx-auto px-4 md:px-6">
                         <div className="flex flex-col items-center space-y-4 text-center">
                             <div className="space-y-2">
                                 <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -71,34 +71,36 @@ export default function PricingPage() {
                 </section>
                 <section className="w-full py-12 md:py-24 lg:py-32">
                     <div className="px-4 md:px-6">
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {plans.map((plan) => (
-                                <Card key={plan.name} className="flex flex-col">
-                                    <CardHeader>
-                                        <CardTitle>{plan.name}</CardTitle>
-                                        <CardDescription>{plan.description}</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="flex-1">
-                                        <div className="text-3xl font-bold">{plan.price}</div>
-                                        <ul className="mt-4 space-y-2">
-                                            {plan.features.map((feature) => (
-                                                <li key={feature} className="flex items-center">
-                                                    <CheckCircle2 className="mr-2 h-4 w-4 text-primary" />
-                                                    <span className="text-sm text-muted-foreground">{feature}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <Button className="w-full">{plan.cta}</Button>
-                                    </CardFooter>
-                                </Card>
-                            ))}
+                        <div className="flex justify-center">
+                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl">
+                                {plans.map((plan) => (
+                                    <Card key={plan.name} className="flex flex-col w-full max-w-sm mx-auto">
+                                        <CardHeader>
+                                            <CardTitle>{plan.name}</CardTitle>
+                                            <CardDescription>{plan.description}</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="flex-1">
+                                            <div className="text-3xl font-bold">{plan.price}</div>
+                                            <ul className="mt-4 space-y-2">
+                                                {plan.features.map((feature) => (
+                                                    <li key={feature} className="flex items-center">
+                                                        <CheckCircle2 className="mr-2 h-4 w-4 text-primary" />
+                                                        <span className="text-sm text-muted-foreground">{feature}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </CardContent>
+                                        <CardFooter>
+                                            <Button className="w-full">{plan.cta}</Button>
+                                        </CardFooter>
+                                    </Card>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </section>
                 <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
-                    <div className="container px-4 md:px-6">
+                    <div className="container mx-auto px-4 md:px-6">
                         <div className="flex flex-col items-center space-y-4 text-center">
                             <div className="space-y-2">
                                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">

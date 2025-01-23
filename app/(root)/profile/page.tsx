@@ -11,8 +11,10 @@ import Link from 'next/link'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { useCallback, useEffect, useState } from "react"
 import { DateRangeSelector } from "@/app/components/DataRangeSelector"
-import { useAppDispatch } from "@/lib/store"
+import { RootState, useAppDispatch, useAppSelector } from "@/lib/store"
 import { change } from "@/lib/reducers/uiSlice"
+import { toFirstCharUppercase } from "@/lib/utils"
+import { planCosts, planCredits } from "@/constants/constants"
 
 
 
@@ -38,8 +40,7 @@ export default function ProfilePage() {
 
     const dispatch = useAppDispatch();
 
-    const name = "Sarah Johnson"
-    const email = "name@gmail.com"
+    const auth = useAppSelector((state: RootState) => state.auth.user)
 
     const [creditUsageData, setCreditUsageData] = useState(initialCreditUsageData)
     const [transformationsData, setTransformationsData] = useState(initialTransformationsData)
@@ -79,13 +80,17 @@ export default function ProfilePage() {
                         </CardHeader>
                         <CardContent className="flex flex-col items-center">
                             <Avatar className="w-32 h-32 mb-4">
-                                <AvatarImage src="/assets/placeholder.jpg" alt={name} />
-                                <AvatarFallback>{name[0]}</AvatarFallback>
+                                <AvatarImage src={`
+                                    ${auth?.profilePicture}
+                                    `} alt={auth?.username} />
+                                <AvatarFallback>
+                                    {auth?.username.split(' ').map((n: string) => n[0]).join('')}
+                                </AvatarFallback>
                             </Avatar>
                         </CardContent>
                         <CardFooter>
                             <Button variant="default" className="w-full">
-                                <Link href={`/profile/${name[0]}`} className="flex gap-2 items-center justify-center">
+                                <Link href={`/profile/${auth?.username}`} className="flex gap-2 items-center justify-center">
                                     <User className="mr-2 h-4 w-4" />
                                     See Public Profile
                                 </Link>
@@ -102,11 +107,15 @@ export default function ProfilePage() {
                                 <div className="flex justify-between items-center">
                                     <div>
                                         <Label>Name</Label>
-                                        <p className="text-lg">{name}</p>
+                                        <p className="text-lg">{
+                                            auth?.nickname || auth?.username
+                                        }</p>
                                     </div>
                                     <div>
                                         <Label>Email</Label>
-                                        <p className="text-lg">{email}</p>
+                                        <p className="text-lg">{
+                                            auth?.email
+                                        }</p>
                                     </div>
                                 </div>
                                 <Link href={"/settings"}>
@@ -128,8 +137,10 @@ export default function ProfilePage() {
                         <CardContent>
                             <div className="flex justify-between items-center">
                                 <div>
-                                    <p className="text-2xl font-bold">Pro Plan</p>
-                                    <p className="text-muted-foreground">$19.99/month</p>
+                                    <p className="text-2xl font-bold">{toFirstCharUppercase(auth?.status as string)} Plan</p>
+                                    <p className="text-muted-foreground">
+                                        {auth?.status && planCosts[auth?.status as keyof typeof planCosts] || 0} / month
+                                    </p>
                                 </div>
                                 <Badge variant="secondary" className="text-lg py-1">Active</Badge>
                             </div>
@@ -149,9 +160,15 @@ export default function ProfilePage() {
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
                                     <p className="text-lg">Credits Remaining</p>
-                                    <p className="text-2xl font-bold">750 / 1000</p>
+                                    <p className="text-2xl font-bold">
+                                        {auth?.credits || 0} / {
+                                            auth?.status && planCredits[auth?.status as keyof typeof planCredits] || 0
+                                        }
+                                    </p>
                                 </div>
-                                <Progress value={75} className="w-full" />
+                                <Progress value={
+                                    (auth?.credits || 0) / (auth?.status && planCredits[auth?.status as keyof typeof planCredits] || 0) * 100
+                                } className="w-full" />
                                 <Button className="w-full">
                                     <User className="mr-2 h-4 w-4" />
                                     Purchase More Credits

@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CalendarIcon, ClockIcon, ArrowLeft } from 'lucide-react'
 import Link from "next/link"
 import Image from "next/image"
-import { SiteHeader } from "@/app/components/SiteHeader"
+import SiteHeader from "@/app/components/SiteHeader"
 import { SiteFooter } from "@/app/components/SiteFooter"
 import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'react';

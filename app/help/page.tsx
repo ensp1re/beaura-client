@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Search, Book, LifeBuoy } from 'lucide-react'
 import Link from "next/link"
-import { SiteHeader } from "../components/SiteHeader"
+import SiteHeader from "../components/SiteHeader"
 import { SiteFooter } from "../components/SiteFooter"
 
 export const metadata = {
@@ -37,7 +37,7 @@ export default function HelpCenterPage() {
             <SiteHeader />
             <main className="flex-1">
                 <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white">
-                    <div className="container px-4 md:px-6">
+                    <div className="container mx-auto px-4 md:px-6">
                         <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">
                             BeauraAI Help Center
                         </h1>

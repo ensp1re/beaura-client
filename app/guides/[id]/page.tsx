@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from 'lucide-react'
 import Link from "next/link"
 import Image from "next/image"
-import { SiteHeader } from "@/app/components/SiteHeader"
+import SiteHeader from "@/app/components/SiteHeader"
 import { SiteFooter } from "@/app/components/SiteFooter"
 
 // This would typically come from a database or API

@@ -202,3 +202,23 @@ export const reviews = [
     review: "Great experience! The transformations are very realistic and fun to try.",
   },
 ]
+
+export const planCredits: {
+  free: number,
+  plus: number,
+  premium: number,
+} = {
+  free: 5,
+  plus: 25,
+  premium: 100,
+}
+
+export const planCosts: {
+  free: number,
+  plus: number,
+  premium: number,
+} = {
+  free: 0,
+  plus: 5.99,
+  premium: 14.99,
+}

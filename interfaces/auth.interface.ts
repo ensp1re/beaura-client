@@ -47,5 +47,6 @@ export interface IAuthRedux {
   profilePicture?: string,
   isPrivate?: boolean,
   bio?: string,
+  credits?: number,
   transformations?: ITransformationData[],
 }

@@ -1,11 +1,15 @@
+'use client';
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { RootState, useAppSelector } from "@/lib/store"
+import { change } from "@/lib/reducers/uiSlice";
+import { RootState, useAppDispatch, useAppSelector } from "@/lib/store"
 import { Heart, Share2 } from 'lucide-react'
 import Image from "next/image"
+import { useEffect } from "react";
 
 
 interface PublicProfilePageProps {
@@ -15,6 +19,12 @@ interface PublicProfilePageProps {
 export default function ProfilePage({ isMyProfile }: PublicProfilePageProps) {
 
     const auth = useAppSelector((state: RootState) => state.auth.user)
+    const dispatch = useAppDispatch()
+
+    useEffect(() => {
+        document.title = `${auth?.nickname || auth?.username} | Beaura`;
+        dispatch(change("Profile"))
+    }, [auth, dispatch])
 
     return (
         <div className="container mx-auto py-10">

@@ -1,5 +1,5 @@
 import { SiteFooter } from "../components/SiteFooter"
-import { SiteHeader } from "../components/SiteHeader"
+import SiteHeader from "../components/SiteHeader"
 
 export const metadata = {
     title: 'Terms of Service - BeauraAI',
