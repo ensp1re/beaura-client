@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { forgotPasswordScheme } from '@/lib/validations/auth.scheme';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useForgotPasswordSendEmailMutation } from '@/services/auth.service';
 
 interface ForgotFormProps {
     email: string;
@@ -18,13 +19,25 @@ const ForgotForm: FC = (): ReactElement => {
     const [email, setEmail] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const onSubmit = (data: ForgotFormProps) => {
-        setIsLoading(true);
-        setTimeout(() => {
+
+    const [forgotPassword] = useForgotPasswordSendEmailMutation();
+
+    const onSubmit = async (data: ForgotFormProps) => {
+        try {
+            setIsLoading(true);
+            const response = await forgotPassword(data.email as string).unwrap();
+            if (response) {
+                toast.success(response.message);
+            }
+        } catch (error) {
+            console.log(error);
+
+            toast.error('An error occurred');
+
+        } finally {
             setIsLoading(false);
-            console.log(data);
-            toast.success('Successfully');
-        }, 2000);
+        }
+
     };
 
     const {

@@ -1,12 +1,12 @@
-import { IBenefitProps, IImageHome, NavLink } from "@/interfaces/root.interface";
+import { IAspectRatioOption, IBenefitProps, IImageHome, NavLink } from "@/interfaces/root.interface";
 import { BiCreditCard } from "react-icons/bi";
 import { FaHome, FaImage } from "react-icons/fa";
 import { RxScissors } from "react-icons/rx";
 
 export const navLinks: NavLink[] = [
   {
-    title: "Home",
-    href: "/home",
+    title: "Dashboard",
+    href: "/dashboard",
     icon: FaHome,
   },
   {
@@ -161,7 +161,7 @@ export const images: IImageHome[] = [
 
 
 
-export const aspectRatioOptions = {
+export const aspectRatioOptions: { [key: string]: IAspectRatioOption } = {
   "1:1": {
     aspectRatio: "1:1",
     label: "Square (1:1)",

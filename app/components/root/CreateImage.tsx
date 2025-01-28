@@ -6,17 +6,19 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import { Plus } from 'lucide-react'
-import { FaUpload } from "react-icons/fa"
+import { FaSpinner, FaUpload } from "react-icons/fa"
 import { ChangeEvent, useEffect, useRef, useState } from "react"
-import { ITransformationData } from "@/interfaces/root.interface"
+import { IAspectRatioOption, ITransformationUpload } from "@/interfaces/root.interface"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { aspectRatioOptions } from "@/constants/constants"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useAppDispatch } from "@/lib/store"
+import { RootState, useAppDispatch, useAppSelector } from "@/lib/store"
 import { change } from "@/lib/reducers/uiSlice"
 import { useSearchParams } from "next/navigation"
 import { Textarea } from "@/components/ui/textarea"
+import { readAsBase64 } from "@/lib/utils"
+import { useCreateTransformationMutation } from "@/services/transformation.service"
 
 
 
@@ -27,9 +29,14 @@ export default function ImageTransformer() {
     const [error, setError] = useState<string | null>(null);
     const [showInput, setShowInput] = useState(false);
     const [isPremium, setIsPremium] = useState(false);
+    const [aspectRatioOption, setAspectRatioOption] = useState<IAspectRatioOption>(aspectRatioOptions["1:1"]);
 
     const searchParams = useSearchParams();
     const prompt = searchParams.get('prompt');
+
+    const auth = useAppSelector((state: RootState) => state.auth.user);
+
+    const [createImage, { isLoading: isDataLoading, }] = useCreateTransformationMutation();
 
 
 
@@ -38,29 +45,42 @@ export default function ImageTransformer() {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        document.title = "Change Haircut | Beaura"
         dispatch(change("Change Haircut"))
         setIsPremium(false);
     }, [dispatch, setIsPremium])
 
-    const [data, setData] = useState<ITransformationData>({
+    const [data, setData] = useState<ITransformationUpload>({
+        userId: "",
         title: "",
         prompt: "",
         tags: [],
         selectedImage: "",
+        isPublic: false,
+        aspectRatio: aspectRatioOptions["1:1"],
+        isQuality: false,
+        transformationType: "HaircutPrompt",
     });
 
     useEffect(() => {
         if (prompt) {
-            setData((
-                prev) => ({
-                    ...prev,
-                    prompt: prompt,
-                }))
+            setData((prev) => ({
+                ...prev,
+                prompt: prompt,
+            }));
         }
-    }, [prompt])
+        if (auth?._id) {
+            setData((prev) => ({
+                ...prev,
+                userId: auth._id,
+            }));
+        }
+    }, [prompt, auth?._id]);
 
 
-    const addToData = (key: string, value: string) => {
+
+
+    const addToData = (key: string, value: string | boolean) => {
         setData((prev) => ({
             ...prev,
             [key]: value,
@@ -69,7 +89,7 @@ export default function ImageTransformer() {
 
 
 
-    const handleFileChange = () => {
+    const handleFileChange = async () => {
         try {
             const file = fileInputRef.current?.files?.[0];
             if (!file) {
@@ -82,6 +102,8 @@ export default function ImageTransformer() {
                 return;
             }
             setSelectedFile(file);
+            const base64 = await readAsBase64(file);
+            addToData("selectedImage", base64 as string);
             setError(null);
         } catch (error: unknown) {
             if (error instanceof Error) {
@@ -137,6 +159,23 @@ export default function ImageTransformer() {
         }
     };
 
+
+
+
+    const handleSubmission = async (): Promise<void> => {
+        setError(null);
+        try {
+            console.log(data);
+            const response = await createImage(data).unwrap();
+            console.log(response);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError("An unexpected error occurred");
+            }
+        }
+    };
 
 
 
@@ -272,8 +311,12 @@ export default function ImageTransformer() {
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Size <span className="text-yellow-500">★</span></label>
                                 <Select
-                                    onValueChange={(value) => addToData("aspectRation", value)}
-                                    defaultValue="1:1"
+                                    defaultValue={aspectRatioOption.aspectRatio}
+                                    onValueChange={(value) => {
+                                        const aspectRatio = aspectRatioOptions[value as keyof typeof aspectRatioOptions];
+                                        setAspectRatioOption(aspectRatio);
+                                        addToData("aspectRatio", aspectRatio.aspectRatio);
+                                    }}
                                     disabled={!isPremium}
                                 >
                                     <SelectTrigger className="w-full" title={
@@ -295,10 +338,10 @@ export default function ImageTransformer() {
                                 <Label className={`flex items-center space-x-2 cursor-pointer
                                                                                 ${!isPremium ? "cursor-not-allowed" : ""} `}>
                                     <Checkbox
-                                        className={`form-checkbox h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary *:
-                                            }`}
-                                        onChange={(e) => addToData("premiumQuality", (e.target as HTMLInputElement).checked ? "true" : "false")}
                                         disabled={!isPremium}
+                                        className={`form-checkbox h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary`}
+                                        checked={data.isQuality}
+                                        onCheckedChange={(checked) => addToData("isQuality", checked)}
                                     />
                                     <span className={`text-sm font-medium ${!isPremium ? " cursor-not-allowed text-gray-500" : ""}`}>
                                         Improve Quality <span className="text-yellow-500">★</span>
@@ -357,7 +400,24 @@ export default function ImageTransformer() {
                         </div>
                         {error && <p className="text-red-500 text-sm">{error}</p>}
                         {/* Create Button */}
-                        <Button className="w-full">Apply</Button>
+                        <Button
+                            onClick={() => addToData("isPublic", !data.isPublic)}
+                            className={`w-full mt-4 ${data.isPublic ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"} `}
+                        >
+                            {
+                                data.isPublic ? "Mark as private" : "Mark as public"
+                            }
+                        </Button>
+                        <Button
+                            onClick={handleSubmission}
+
+                            disabled={!selectedFile || !data.title || !data.prompt}
+                            className={`w-full mt-4 ${!selectedFile || !data.title || !data.prompt || isDataLoading ? "cursor-not-allowed" : "bg-primary hover:bg-primary/90"
+                                }`}>
+                            {isDataLoading ? (
+                                <FaSpinner className="animate-spin h-4 w-4 mr-2" />
+                            ) : "Create"}
+                        </Button>
                     </Card>
                 </div>
             </div >

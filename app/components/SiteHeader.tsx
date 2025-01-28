@@ -1,13 +1,20 @@
+'use client';
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { FC, ReactElement } from "react"
+import { FC, ReactElement, useEffect, useState } from "react"
 import { RootState, useAppSelector } from "@/lib/store"
 
 
 const Header: FC = (): ReactElement => {
 
+    const [clientAccessToken, setClientAccessToken] = useState<string | null>(null);
     const accessToken = useAppSelector((state: RootState) => state.auth.accessToken);
+
+    useEffect(() => {
+        setClientAccessToken(accessToken);
+    }, [accessToken]);
 
     return (
         <header className="flex sticky top-0 z-50 px-2 md:px-10 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -35,22 +42,21 @@ const Header: FC = (): ReactElement => {
                 <div className="flex items-center space-x-4">
 
                     {
-                        accessToken !== null ? (
-                            <Link href="/dashboard">
-                                <Button variant="default">Dashboard</Button>
-                            </Link>
+                        clientAccessToken !== null ? (
+                            <Button variant="default" asChild>
+                                <Link href="/dashboard">Dashboard</Link>
+                            </Button>
                         ) : (
                             <>
                                 <Button variant="ghost" asChild>
                                     <Link href="/login">Sign In</Link>
                                 </Button>
                                 <Button asChild>
-                                    <Link href="/repgister">Get Started</Link>
+                                    <Link href="/register">Get Started</Link>
                                 </Button>
                             </>
                         )
                     }
-
 
                 </div>
             </div>

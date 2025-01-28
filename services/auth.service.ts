@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/api";
-import { ISignUpPostData } from "@/interfaces/auth.interface"
+import { ISignUpPostData, ResetPasswordFormProps } from "@/interfaces/auth.interface"
 
 
 export const authApi = api.injectEndpoints({
@@ -41,7 +41,24 @@ export const authApi = api.injectEndpoints({
                 method: "GET",
                 credentials: 'include',
             })
-        })
+        }),
+        forgotPasswordSendEmail: build.mutation({
+            query: (email: string) => ({
+                url: '/auth/forgot-password',
+                method: 'PUT',
+                body: { email }
+            })
+        }),
+        resetPassword: build.mutation({
+            query: ({ data, token }: { data: ResetPasswordFormProps, token: string }) => ({
+                url: '/auth/reset-password?token=' + token,
+                method: 'PUT',
+                body: {
+                    password: data.password,
+                    confirmPassword: data.confirmPassword
+                }
+            })
+        }),
     })
 })
 
@@ -51,5 +68,7 @@ export const {
     useLoginMutation,
     useGoogleLoginMutation,
     useCheckAuthenticationQuery,
+    useForgotPasswordSendEmailMutation,
+    useResetPasswordMutation,
 } = authApi;
 export default authApi;

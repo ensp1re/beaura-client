@@ -74,7 +74,7 @@ const LoginForm: FC = (): ReactElement => {
                     isLoggedIn: true,
                 }));
 
-                router.push("/home")
+                router.push("/dashboard")
             } else {
                 toast.error('Login failed');
             }
@@ -109,7 +109,7 @@ const LoginForm: FC = (): ReactElement => {
                     isLoggedIn: true,
                 }));
 
-                router.push("/home")
+                router.push("/dashboard")
             } else {
                 toast.error("Something went wrong!")
                 console.log(response)

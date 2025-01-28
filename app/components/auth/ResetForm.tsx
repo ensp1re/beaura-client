@@ -4,12 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";
 import { ResetPasswordFormProps } from '@/interfaces/auth.interface';
 import { resetPasswordScheme } from '@/lib/validations/auth.scheme';
+import { useResetPasswordMutation } from '@/services/auth.service';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import React, { ChangeEvent, FC, ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { FaSpinner } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const ResetForm: FC = (): ReactElement => {
 
@@ -17,6 +20,11 @@ const ResetForm: FC = (): ReactElement => {
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isChanged, setIsChanged] = useState<boolean>(false);
+
+    const [resetPassword] = useResetPasswordMutation();
+
+    const token = useSearchParams().get('token');
+    console.log(token);
 
 
     const {
@@ -31,15 +39,21 @@ const ResetForm: FC = (): ReactElement => {
         }
     })
 
-    const onSubmit = (data: ResetPasswordFormProps) => {
+    const onSubmit = async (data: ResetPasswordFormProps) => {
         setIsLoading(true);
-        setTimeout(() => {
+        try {
+            const response = await resetPassword({ data, token: token! });
 
-            setIsChanged(true);
-            console.log(data);
-            setIsLoading(false);
-        }, 2000);
-    };
+            if (response) {
+                setIsChanged(true);
+                setIsLoading(false);
+            }
+
+        } catch (error) {
+            console.log(error);
+            toast.error('Something went wrong');
+        }
+};
 
 
 
@@ -73,7 +87,7 @@ const ResetForm: FC = (): ReactElement => {
                         </h1><p className='text-gray-500 self-start md:text-center'>
                                 Your new password must be unique from those previously used.
                             </p>
-                            <form onSubmit={handleSubmit(onSubmit)} className='max-w-[570px] pt-5 w-full space-y-1 mx-4 text-gray-600'>
+                            <form onSubmit={handleSubmit(onSubmit)} className='max-w-[570px] space-y-3 pt-5 w-full mx-4 text-gray-600'>
                                 <Input
                                     {...register('password')}
                                     value={password}

@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/lib/store';
 import { logout } from '@/lib/reducers/authSlice';
-import { toast } from 'react-toastify';
 import { FaSpinner } from 'react-icons/fa';
 
 
@@ -21,14 +20,14 @@ const LogoutModal: FC<LogoutModalProps> = ({ children }): ReactElement => {
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
     const onLogout = (): void => {
-        setIsLoading(true);
-        setTimeout(() => {
-            dispatch(logout());
-            toast.success("Logged out successfully");
-            router.push("/login");
-            setIsLoading(false);
-        }, 1000);
-
+        if (typeof window !== 'undefined') {
+            setIsLoading(true);
+            setTimeout(() => {
+                dispatch(logout());
+                router.push("/login");
+                setIsLoading(false);
+            }, 1000);
+        }
     };
 
     return (
@@ -40,7 +39,7 @@ const LogoutModal: FC<LogoutModalProps> = ({ children }): ReactElement => {
                 <DialogTitle>Logout</DialogTitle>
                 <DialogDescription>Are you sure you want to logout?</DialogDescription>
 
-                <div className='flex justify-end space-x-4'>
+                <div suppressHydrationWarning className='flex justify-end space-x-4'>
                     <Button variant="destructive" onClick={() => {
                         onLogout();
                     }}>

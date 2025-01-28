@@ -71,7 +71,7 @@ const RegisterForm: FC = (): ReactElement => {
                     isLoggedIn: true,
                 }));
 
-                router.push("/home");
+                router.push("/dashboard");
             } else {
                 toast.error("Something went wrong!");
             }
@@ -105,7 +105,7 @@ const RegisterForm: FC = (): ReactElement => {
                     isLoggedIn: true,
                 }));
 
-                router.push("/home")
+                router.push("/dashboard")
             } else {
                 toast.error("Something went wrong!")
                 console.log(response)

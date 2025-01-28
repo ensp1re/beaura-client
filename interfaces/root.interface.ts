@@ -30,6 +30,16 @@ export interface IImageHome {
   height: number;
 }
 
+
+export interface IAspectRatioOption {
+  aspectRatio: string;
+  label: string;
+  width: number;
+  height: number;
+}
+
+
+
 export interface IImageGallery {
   id: number;
   src: string;
@@ -54,10 +64,10 @@ export interface ITransformationData {
   userId: string | undefined;
   title?: string;
   prompt?: string;
-  selectedImage?: string;
+  selectedImage?: ArrayBuffer | string | null;
   tags?: string[];
   transformationType?: string; // "GenerativeReplace" || "HaircutGallery" || "HaircutPrompt" || "3DModel" || "ImageToImage"
-  aspectRatio?: string;
+  aspectRatio?: IAspectRatioOption;
   isQuality?: boolean;
   isPublic?: boolean;
   fromImage?: string;
@@ -112,5 +122,18 @@ export interface PublicProfile {
   bio: string;
   memberSince: string;
   transformations: number;
+}
+
+
+export interface ITransformationUpload {
+  userId: string;
+  title: string;
+  prompt: string;
+  tags: string[];
+  selectedImage: ArrayBuffer | string | null;
+  isPublic: boolean;
+  aspectRatio: IAspectRatioOption;
+  isQuality: boolean;
+  transformationType: string;
 }
 
