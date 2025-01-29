@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
       "media.thefashionisto.com",
       "lh3.googleusercontent.com",
       "i.pinimg.com",
+      "res.cloudinary.com",
       "cdn.shopify.com", // Added domain
       "avatars.githubusercontent.com", // Added domain
       "hebbkx1anhila5yf.public.blob.vercel-storage.com",

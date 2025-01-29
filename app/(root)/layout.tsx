@@ -6,7 +6,6 @@ import Fonts from "@/lib/fonts";
 import Sidebar from "../components/root/Sidebar";
 import Header from "../components/root/Header";
 import ThemeProvider from "../components/root/ThemeProvider";
-import { ToastContainer } from "react-toastify";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 
@@ -17,10 +16,9 @@ export default function MainLayout({
     children: React.ReactNode;
 }) {
     return (
-        <ThemeProvider  attribute={'class'} defaultTheme="system" enableSystem>
+        <ThemeProvider attribute={'class'} defaultTheme="system" enableSystem>
             <ProtectedRoute>
                 <div suppressHydrationWarning className={`bg-background flex h-screen overflow-hidden ${Fonts.getInter()}`}>
-                    <ToastContainer />
                     <Sidebar />
                     <main className="flex-1 flex flex-col overflow-hidden  lg:pl-64">
                         <Header />
@@ -28,7 +26,7 @@ export default function MainLayout({
                             {children}
                         </div>
                     </main>
-            </div>
+                </div>
             </ProtectedRoute>
         </ThemeProvider>
     );
