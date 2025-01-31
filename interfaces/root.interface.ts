@@ -60,7 +60,7 @@ export interface IShareTransformationPayload {
 }
 
 export interface ITransformationData {
-  id?: number;
+  _id?: number;
   userId: string | undefined;
   title?: string;
   prompt?: string;

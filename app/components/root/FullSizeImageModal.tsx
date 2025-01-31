@@ -26,8 +26,7 @@ export function FullSizeImageModal({ src, alt, className }: FullSizeImageModalPr
                     />
                 </div>
             </DialogTrigger>
-            <DialogContent className="flex items-center justify-center bg-transparent border-0 text-white w-full h-full">
-                <DialogTitle className='w-full h-full relative'></DialogTitle>
+            <DialogContent className="flex items-center justify-center bg-transparent border-0 text-white w-full h-full [&>button]:hidden">
                 <div className="relative w-screen h-screen" style={{ aspectRatio: '1 / 1' }}>
                     <Image
                         src={src}
@@ -36,6 +35,8 @@ export function FullSizeImageModal({ src, alt, className }: FullSizeImageModalPr
                         className="object-contain"
                     />
                 </div>
+                <DialogTitle className='w-full h-full relative flex justify-end items-start p-4'>
+                </DialogTitle>
             </DialogContent>
         </Dialog>
     )
