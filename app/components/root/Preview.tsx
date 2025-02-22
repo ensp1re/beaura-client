@@ -11,9 +11,10 @@ import { RootState, useAppDispatch, useAppSelector } from '@/lib/store'
 import { change } from '@/lib/reducers/uiSlice'
 import { BiBasket } from 'react-icons/bi'
 import { FaDownload } from 'react-icons/fa'
-import { useGetTransformationByIdQuery } from '@/services/transformation.service'
+import { useDeleteTransformationMutation, useGetTransformationByIdQuery } from '@/services/transformation.service'
 import LightWaveLoading from '../WaveLoading'
 import { ITransformationData } from '@/interfaces/root.interface'
+import toast from 'react-hot-toast'
 
 // interface GalleryItem {
 //   id: string
@@ -36,9 +37,13 @@ export default function PreviewTransformationComponent(): React.ReactElement {
   const { data, isLoading } = useGetTransformationByIdQuery(id)
 
 
+  const [deleteTRansformation, {
+    isLoading: isDeleting,
+  }] = useDeleteTransformationMutation()
+
   useEffect(() => {
     if (data) {
-      setIsOwner(data.userId === auth?._id)
+      setIsOwner(data.userId._id === auth?._id)
       console.log(data)
       setTransformation(data)
     }
@@ -51,6 +56,46 @@ export default function PreviewTransformationComponent(): React.ReactElement {
   useEffect(() => {
     dispatch(change("Transformation Preview"))
   }, [dispatch])
+
+
+  const handleDelete = async () => {
+    try {
+      const response = await deleteTRansformation(id).unwrap();
+      if (response) {
+        toast.success("Transformation deleted successfully")
+        router.push("/dashboard")
+      } else {
+        toast.error("Failed to delete transformation")
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to delete transformation")
+    }
+  };
+
+
+  const downloadSelectedTransformation = async () => {
+    try {
+      const selectedImage = transformation?.toImage;
+      if (!selectedImage) {
+        return;
+      }
+      const response = await fetch(selectedImage);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `t_${transformation._id}.jpg`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+
+    } catch (error) {
+      console.log(error)
+      toast.error("Failed to download transformation")
+
+    }
+  };
 
 
   return (
@@ -80,44 +125,49 @@ export default function PreviewTransformationComponent(): React.ReactElement {
 
 
         </CardHeader>
-        <CardContent>
-
+        <CardContent className=''>
           {
             isLoading ? (
-              <LightWaveLoading className="h-16" />
+              <LightWaveLoading className="h-full" />
             ) : (
               <>
                 {
-                  transformation ? (
-                    <><div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <h3 className="font-semibold mb-2">Original Image</h3>
-                        <FullSizeImageModal
-                          src={transformation?.fromImage || "/assets/placeholder.jpg"}
-                          alt="Original image"
-                          className="aspect-square" />
+                  !data ? (
+                    <div className="text-muted-foreground text-center min-h-[300px] flex items-center justify-center">
+                      Cannot find this transformation: <span className='font-semibold'>
+                        {id}
+                      </span>
+                    </div>
+                  ) : transformation ? (
+                    <>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                          <h3 className="font-semibold mb-2">Original Image</h3>
+                          <FullSizeImageModal
+                            src={transformation?.fromImage || "/assets/placeholder.jpg"}
+                            alt="Original image"
+                            className="aspect-square" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">Transformed Image</h3>
+                          <FullSizeImageModal
+                            src={transformation?.toImage || "/assets/placeholder.jpg"}
+                            alt="Transformed image"
+                            className="aspect-square" />
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-semibold mb-2">Original Image</h3>
-                        <FullSizeImageModal
-                          src={transformation?.toImage || "/assets/placeholder.jpg"}
-                          alt="Original image"
-                          className="aspect-square" />
-                      </div>
-                    </div><div className="mt-6">
+                      <div className="mt-6">
                         <h3 className="font-semibold mb-2">Transformation Details</h3>
                         <p className="text-sm text-muted-foreground">{transformation?.prompt}</p>
-                      </div></>
-                  )
-                    : (
-                      <div className="text-muted-foreground text-center">
-                        Failed to load transformation
                       </div>
-                    )
+                    </>
+                  ) : (
+                    <div className="text-muted-foreground text-center">
+                      Failed to load transformation
+                    </div>
+                  )
                 }
-
               </>
-
             )
           }
 
@@ -127,9 +177,21 @@ export default function PreviewTransformationComponent(): React.ReactElement {
           `}>
           {
             isOwner && (
-              <Button variant="destructive" size="sm" className="col-span-1 md:col-span-1">
-                <BiBasket className="h-4 w-4 mr-2" />
-                Delete
+              <Button
+                onClick={handleDelete}
+                variant="destructive" size="sm" className="col-span-1 md:col-span-1">
+                {
+                  isDeleting ? (
+                    <LightWaveLoading className="h-4" />
+                  ) : (
+                    <>
+                      <BiBasket className="h-4 w-4 mr-2" />
+                      Delete Transformation
+                    </>
+
+                  )
+                }
+
               </Button>
             )
           }
@@ -142,7 +204,7 @@ export default function PreviewTransformationComponent(): React.ReactElement {
             <FaDownload className="h-4 w-4 mr-2" />
             Use prompt
           </Button>
-          <Button size="sm" className="col-span-1 md:col-span-1 gap-2">
+          <Button size="sm" className="col-span-1 md:col-span-1 gap-2" onClick={downloadSelectedTransformation}>
             <Download className="h-4 w-4" />
             Download Result
           </Button>

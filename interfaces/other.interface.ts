@@ -15,3 +15,16 @@ export interface ISize {
   width: string;
   height: string;
 }
+
+export interface IUserUpdate {
+  username?: string;
+  email?: string;
+  nickname?: string;
+  isPrivate?: boolean;
+  profilePicture?: string;
+  bio?: string;
+  creditBalance?: number;
+  isNotificationEnabled?: boolean;
+  status?: string;
+  role?: string;
+}

@@ -1,4 +1,5 @@
 import { IconType } from "react-icons";
+import { IAuthRedux } from "./auth.interface";
 
 export interface NavLink {
   title?: string;
@@ -20,7 +21,6 @@ export interface IBenefitProps {
   isIncluded: boolean;
 }
 
-
 export interface IImageHome {
   id: number;
   src: string;
@@ -30,15 +30,12 @@ export interface IImageHome {
   height: number;
 }
 
-
 export interface IAspectRatioOption {
   aspectRatio: string;
   label: string;
   width: number;
   height: number;
 }
-
-
 
 export interface IImageGallery {
   id: number;
@@ -51,7 +48,7 @@ export interface IImageGallery {
 
 export interface ILikeTransformationPayload {
   transformationId: string;
-  userId: string;
+  userId: IAuthRedux;
 }
 
 export interface IShareTransformationPayload {
@@ -60,8 +57,8 @@ export interface IShareTransformationPayload {
 }
 
 export interface ITransformationData {
-  _id?: number;
-  userId: string | undefined;
+  _id?: string;
+  userId: IAuthRedux;
   title?: string;
   prompt?: string;
   selectedImage?: ArrayBuffer | string | null;
@@ -124,7 +121,6 @@ export interface PublicProfile {
   transformations: number;
 }
 
-
 export interface ITransformationUpload {
   userId: string;
   title: string;
@@ -136,4 +132,3 @@ export interface ITransformationUpload {
   isQuality: boolean;
   transformationType: string;
 }
-

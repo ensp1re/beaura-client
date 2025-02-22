@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { SiteFooter } from "../components/SiteFooter"
-import { SiteHeader } from "../components/SiteHeader"
+import SiteHeader from "../components/SiteHeader"
 import { SidebarAdmin } from "./components/SibebarAdmin"
 
 import { useCallback, useEffect } from "react";
@@ -12,7 +12,7 @@ export default function AdminLayout({
 }: {
     children: React.ReactNode
 }) {
-    const { setTheme  } = useTheme()
+    const { setTheme } = useTheme()
 
     const changeTheme = useCallback(() => {
         setTheme("light")

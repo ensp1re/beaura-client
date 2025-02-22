@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 
+
 export function SiteFooter() {
     return (
         <footer className="px-[75px] border-t bg-background">

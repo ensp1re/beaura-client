@@ -26,7 +26,7 @@ const RegisterForm: FC = (): ReactElement => {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [registerMutation, { isLoading, isError, isSuccess }] = useSignUpMutation();
+    const [registerMutation, { isLoading }] = useSignUpMutation();
     const [googleMutation] = useGoogleLoginMutation();
     const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
 

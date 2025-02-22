@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { MailIcon, PhoneIcon, MapPinIcon } from 'lucide-react'
 import { toast } from 'react-toastify'
-import { SiteHeader } from '../components/SiteHeader'
+import SiteHeader from '../components/SiteHeader'
 import { SiteFooter } from '../components/SiteFooter'
 
 export default function ContactPage() {

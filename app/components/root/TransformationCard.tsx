@@ -1,20 +1,23 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Download, Heart } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 interface TransformationCardProps {
   transformation: {
-    id: number
+    id: string
     title: string
     image: string
     likes: number
-    downloads: number
   }
 }
 
 export function TransformationCard({ transformation }: TransformationCardProps) {
+
+  const router = useRouter();
+
   return (
-    <Card>
+    <Card onClick={() => router.push(`/preview-transformation/${transformation.id}`)} className="cursor-pointer">
       <CardContent className="p-4">
         <div className="aspect-square relative overflow-hidden rounded-lg">
           <Image
@@ -31,12 +34,10 @@ export function TransformationCard({ transformation }: TransformationCardProps) 
             <Heart className="h-4 w-4" />
             <span className="text-sm">{transformation.likes}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Download className="h-4 w-4" />
-            <span className="text-sm">{transformation.downloads}</span>
-          </div>
         </div>
-        <span className="text-sm font-medium">{transformation.title}</span>
+        <span className="text-sm font-medium">
+          {transformation.title.length > 20 ? `${transformation.title.substring(0, 20)}...` : transformation.title}
+        </span>
       </CardFooter>
     </Card>
   )

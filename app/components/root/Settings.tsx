@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAppDispatch } from '@/lib/store'
+import { RootState, useAppDispatch, useAppSelector } from '@/lib/store'
 import { change } from '@/lib/reducers/uiSlice'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -16,27 +16,23 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Textarea } from '@/components/ui/textarea'
+import { useChangePasswordMutation } from '@/services/auth.service'
+import toast from 'react-hot-toast'
+import { useUpdateUserByIdMutation } from '@/services/users.service'
 
 const profileFormSchema = z.object({
-  username: z.string().min(2).max(30),
-  name: z.string().min(2).max(50),
+  username: z.string().min(2).max(30).optional(),
+  nickname: z.string().min(2).max(50).optional(),
   bio: z.string().max(160).optional(),
-  email: z.string().email(),
-  isPublic: z.boolean(),
-  showLikedTransformations: z.boolean(),
+  email: z.string().email().optional(),
+  isPrivate: z.boolean().optional(),
+  showLikedTransformations: z.boolean().optional(),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 // This would come from your database in a real app
-const defaultValues: Partial<ProfileFormValues> = {
-  username: "sarahstyle",
-  name: "Sarah Johnson",
-  bio: "Hair transformation enthusiast | Digital Artist",
-  email: "sarah@example.com",
-  isPublic: true,
-  showLikedTransformations: false,
-}
+
 
 export interface ChangePasswordProps {
   currentPassword: string
@@ -55,6 +51,28 @@ export default function SettingsPage() {
   const [marketingEmails, setMarketingEmails] = useState<boolean>(false)
 
 
+  const auth = useAppSelector((state: RootState) => state.auth)
+
+  const defaultValues: Partial<ProfileFormValues> = {
+    username: auth.user?.username,
+    nickname: auth.user?.nickname,
+    bio: auth.user?.bio,
+    email: auth.user?.email,
+    isPrivate: auth.user?.isPrivate,
+  }
+
+
+
+
+  const [changePassword, {
+    isLoading: isChangePasswordLoading,
+  }] = useChangePasswordMutation();
+
+
+  const [updateProfile, {
+    isLoading: isUpdateProfileLoading
+  }] = useUpdateUserByIdMutation();
+
 
   const dispatch = useAppDispatch();
 
@@ -71,14 +89,51 @@ export default function SettingsPage() {
     resolver: zodResolver(changePasswordSchema),
   })
 
-  const onChangePasswordSubmit = (data: any) => {
-    console.log(data);
-    changePasswordForm.reset();
+  const onChangePasswordSubmit = async (data: ChangePasswordProps) => {
+    try {
+      if (data.newPassword !== data.confirmNewPassword) {
+        toast.error("Passwords do not match");
+      };
+      const updateData = {
+        oldPassword: data.currentPassword,
+        newPassword: data.newPassword
+      }
+      const response = await changePassword(updateData).unwrap();
+      if (response?.error) {
+        toast.error(response.error)
+      } else {
+        toast.success("Password updated successfully")
+      }
+      changePasswordForm.reset();
+    } catch (error) {
+      console.log(error)
+      toast.error("An error occurred")
+    }
   };
 
-  function onSubmit(data: ProfileFormValues) {
-    // In a real app, you would update the profile here
-    console.log(data)
+  async function onSubmit(data: ProfileFormValues) {
+    try {
+      const updateData = {
+        id: auth.user?._id || '',
+        dto: {
+          username: data.username,
+          name: data.nickname,
+          bio: data.bio,
+          isPrivate: data.isPrivate,
+        }
+      }
+      const response = await updateProfile(updateData).unwrap();
+      if (!response) {
+        console.log(response)
+        toast.error("Something went wrong")
+      } else {
+        console.log(response)
+        toast.success("Profile updated successfully")
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("An error occurred")
+    }
   }
 
   return (
@@ -138,7 +193,9 @@ export default function SettingsPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type='submit'>Save Changes</Button>
+                  <Button
+                    disabled={isChangePasswordLoading || !changePasswordForm.formState.isValid}
+                    type='submit'>Save Changes</Button>
                 </form>
 
               </Form>
@@ -212,15 +269,15 @@ export default function SettingsPage() {
                   />
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="nickname"
                     render={({ field }: { field: any }) => (
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input {...field} value={field.value || ""} />
                         </FormControl>
                         <FormDescription>
-                          Your full name as you&apos;d like it to appear on your profile.
+                          Your full nickname as you&apos;d like it to appear on your profile.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -248,11 +305,11 @@ export default function SettingsPage() {
                   />
                   <FormField
                     control={form.control}
-                    name="isPublic"
+                    name="isPrivate"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Public Profile</FormLabel>
+                          <FormLabel className="text-base">Private Profile</FormLabel>
                           <FormDescription>
                             Allow others to view your profile and transformations
                           </FormDescription>
@@ -268,7 +325,7 @@ export default function SettingsPage() {
                       </FormItem>
                     )}
                   />
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="showLikedTransformations"
                     render={({ field }) => (
@@ -289,8 +346,10 @@ export default function SettingsPage() {
                         </FormControl>
                       </FormItem>
                     )}
-                  />
-                  <Button type="submit">Update profile</Button>
+                  /> */}
+                  <Button
+                    disabled={isUpdateProfileLoading || !form.formState.isValid}
+                    type="submit">Update profile</Button>
                 </form>
               </Form>
             </CardContent>
