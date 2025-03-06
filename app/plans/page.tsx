@@ -3,52 +3,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { CheckCircle2 } from 'lucide-react'
 import SiteHeader from "../components/SiteHeader"
 import { SiteFooter } from "../components/SiteFooter"
+import { plans } from "@/constants/constants"
 
 export const metadata = {
     title: 'Pricing - BeauraAI',
     description: 'Choose the perfect plan for your AI-powered hairstyle transformations with BeauraAI.',
 }
 
-const plans = [
-    {
-        name: "Basic",
-        price: "Free",
-        description: "Perfect for trying out BeauraAI",
-        features: [
-            "5 AI transformations per month",
-            "Basic style library",
-            "Standard quality renders",
-            "24-hour support response time",
-        ],
-        cta: "Get Started",
-    },
-    {
-        name: "Pro",
-        price: "$9.99/month",
-        description: "Ideal for regular style explorers",
-        features: [
-            "50 AI transformations per month",
-            "Extended style library",
-            "High-quality renders",
-            "Multi-angle views",
-            "12-hour support response time",
-        ],
-        cta: "Start Pro Plan",
-    },
-    {
-        name: "Ultimate",
-        price: "$19.99/month",
-        description: "For professionals and style enthusiasts",
-        features: [
-            "Unlimited AI transformations",
-            "Full style library access",
-            "Ultra high-quality renders",
-            "Advanced editing tools",
-            "Priority support (4-hour response)",
-        ],
-        cta: "Go Ultimate",
-    },
-]
 
 export default function PricingPage() {
     return (

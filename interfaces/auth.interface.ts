@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IconType } from "react-icons";
-import { ITransformationData } from "./root.interface";
+import { ISubscription, ITransformationData } from "./root.interface";
+import { IBill } from "@/app/(root)/billing/page";
 
 export interface OauthElementProps {
   Icon: IconType | unknown | React.ComponentType<unknown>;
@@ -38,15 +39,21 @@ export interface ResetPasswordFormProps {
 }
 
 export interface IAuthRedux {
-  _id: string,
-  username: string,
-  email: string,
-  role: string,
-  status?: string,
-  nickname?: string,
-  profilePicture?: string,
-  isPrivate?: boolean,
-  bio?: string,
-  credits?: number,
-  transformations?: ITransformationData[],
+  _id: string;
+  username: string;
+  email: string;
+  role: string;
+  status?: string;
+  nickname?: string;
+  profilePicture?: string;
+  isPrivate?: boolean;
+  isNotificationEnabled?: boolean;
+  bio?: string;
+  credits?: number;
+  transformations?: ITransformationData[];
+  subscriptions?: ISubscription[];
+  transactions?: IBill[];
+  creditBalance?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

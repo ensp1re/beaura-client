@@ -144,3 +144,14 @@ h2 {
     animation: wave 2s ease infinite;
   }
 }
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

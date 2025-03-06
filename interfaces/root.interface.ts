@@ -132,3 +132,14 @@ export interface ITransformationUpload {
   isQuality: boolean;
   transformationType: string;
 }
+
+
+export interface ISubscription {
+  id?: string;
+  status: string;
+  planId: string;
+  planName: string;
+  currentPeriodStart: Date;
+  currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
+}

@@ -4,22 +4,66 @@ import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Check } from 'lucide-react'
-import { useAppDispatch } from '@/lib/store';
-import { useEffect } from 'react';
+import { RootState, useAppDispatch, useAppSelector } from '@/lib/store';
+import { ReactElement, useEffect } from 'react';
 import { change } from '@/lib/reducers/uiSlice';
+import { useCreateCheckoutSessionMutation } from '@/services/payments.service';
+import stripePromise from '@/lib/stripe';
+import toast from 'react-hot-toast';
+import { FaSpinner } from 'react-icons/fa';
 
-export default function PricingPage() {
+export default function PricingPage(): ReactElement {
 
 
     const dispatch = useAppDispatch();
+    const userId = useAppSelector((state: RootState) => state.auth.user?._id);
+    const auth = useAppSelector((state: RootState) => state.auth);
+
+    const [
+        createCheckoutSession,
+        { isLoading }
+    ] = useCreateCheckoutSessionMutation();
+
+    const handleSubscribe = async (planType: string) => {
+        try {
+            if (!userId) {
+                throw new Error("User ID is undefined");
+            }
+            const response = await createCheckoutSession({ userId, planType }).unwrap();
+
+            console.log(response)
+
+            if (!response) {
+                throw new Error("Failed to create checkout session");
+            }
+
+            const { sessionId } = response; // sessionId and url here
+
+            const stripe = await stripePromise;
+
+            if (!stripe) {
+                throw new Error("Failed to load Stripe");
+            }
+
+            const { error } = await stripe.redirectToCheckout({
+                sessionId
+            });
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to create checkout session");
+        }
+    };
 
     useEffect(() => {
         dispatch(change("Pricing"))
     }, [dispatch])
 
     return (
-
-
         <div className="container mx-auto px-6 py-12">
             <div className="text-center space-y-4 mb-12">
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight">From zero to pro.</h1>
@@ -59,7 +103,7 @@ export default function PricingPage() {
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        <Link href="/checkout?plan=free" className="w-full">
+                        <Link href="/transformation/haircut" className="w-full">
                             <Button variant="outline" className="w-full">Start for free</Button>
                         </Link>
                     </CardFooter>
@@ -94,9 +138,21 @@ export default function PricingPage() {
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        <Link href="/checkout?plan=plus" className="w-full">
-                            <Button variant="outline" className="w-full">Continue with Plus</Button>
-                        </Link>
+                        <Button
+                            onClick={() => handleSubscribe("plus")}
+                            disabled={isLoading || auth.user?.status?.toLowerCase() === "plus"}
+                            variant="outline" className="w-full">
+                            {
+                                isLoading ?
+                                    (
+                                        <FaSpinner className="animate-spin inline-block" />
+                                    ) : (
+                                        auth.user?.status?.toLowerCase() === "plus" ? "Subscribed" : (
+                                            auth.user?.status?.toLowerCase() === "pro" ? "Downgrade to Plus" : "Continue with Plus"
+                                        )
+                                    )
+                            }
+                        </Button>
                     </CardFooter>
                 </Card>
 
@@ -133,9 +189,24 @@ export default function PricingPage() {
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        <Link href="/checkout?plan=premium" className="w-full">
-                            <Button className="w-full">Continue with Pro</Button>
-                        </Link>
+                        <Button
+                            onClick={() => handleSubscribe("pro")}
+                            disabled={isLoading || auth.user?.status?.toLowerCase() === "pro"}
+                            variant="default"
+                            className={
+                                `w-full ${auth.user?.status?.toLowerCase() === "pro" ? "bg-primary text-white dark:text-black" : "text-primary border-primary"}`
+                            }>
+                            {
+                                isLoading ?
+                                    (
+                                        <FaSpinner className="animate-spin inline-block" />
+                                    ) : (
+                                        auth.user?.status?.toLowerCase() === "pro" ? "Subscribed" : (
+                                            auth.user?.status?.toLowerCase() === "plus" ? "Upgrade to Pro" : "Continue with Pro"
+                                        )
+                                    )
+                            }
+                        </Button>
                     </CardFooter>
                 </Card>
             </div>

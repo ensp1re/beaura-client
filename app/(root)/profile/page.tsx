@@ -139,7 +139,7 @@ export default function ProfilePage() {
                                 <div>
                                     <p className="text-2xl font-bold">{toFirstCharUppercase(auth?.status as string)} Plan</p>
                                     <p className="text-muted-foreground">
-                                        {auth?.status && planCosts[auth?.status as keyof typeof planCosts] || 0} / month
+                                        ${auth?.status && planCosts[auth?.status.toLowerCase() as keyof typeof planCosts] || 0} / month
                                     </p>
                                 </div>
                                 <Badge variant="secondary" className="text-lg py-1">Active</Badge>
@@ -161,18 +161,18 @@ export default function ProfilePage() {
                                 <div className="flex justify-between items-center">
                                     <p className="text-lg">Credits Remaining</p>
                                     <p className="text-2xl font-bold">
-                                        {auth?.credits || 0} / {
-                                            auth?.status && planCredits[auth?.status as keyof typeof planCredits] || 0
+                                        {auth?.creditBalance || 0} / {
+                                            auth?.status && planCredits[auth?.status.toLowerCase() as keyof typeof planCredits] || 0
                                         }
                                     </p>
                                 </div>
                                 <Progress value={
-                                    (auth?.credits || 0) / (auth?.status && planCredits[auth?.status as keyof typeof planCredits] || 0) * 100
+                                    (auth?.creditBalance || 0) / (auth?.status && planCredits[auth?.status.toLowerCase() as keyof typeof planCredits] || 0) * 100
                                 } className="w-full" />
-                                <Button className="w-full">
+                                {/* <Button className="w-full">
                                     <User className="mr-2 h-4 w-4" />
                                     Purchase More Credits
-                                </Button>
+                                </Button> */}
                             </div>
                         </CardContent>
                     </Card>

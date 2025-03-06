@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -10,20 +10,63 @@ import { MailIcon, PhoneIcon, MapPinIcon } from 'lucide-react'
 import { toast } from 'react-toastify'
 import SiteHeader from '../components/SiteHeader'
 import { SiteFooter } from '../components/SiteFooter'
+import { RootState, useAppSelector } from '@/lib/store'
+import { useCreateTicketMutation } from '@/services/ticket.service'
+import { FaSpinner } from 'react-icons/fa'
+import { ICreateTicketDto } from '@/interfaces/ticket.interface'
 
 export default function ContactPage() {
-    const [name, setName] = useState('')
+    const [subject, setSubject] = useState('')
     const [email, setEmail] = useState('')
     const [message, setMessage] = useState('')
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const auth = useAppSelector((state: RootState) => state.auth)
+
+    const [createTicket, {
+        isLoading: isCreatingTicket,
+        isError: createTicketError,
+    }] = useCreateTicketMutation();
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        console.log('Form submitted:', { name, email, message })
-        toast.success("Message Sent: We've received your message and will get back to you soon.")
-        setName('')
+        try {
+
+            const data: ICreateTicketDto = {
+                email: email,
+                subject: subject,
+                content: message
+            }
+
+
+            const response = await createTicket(data).unwrap()
+
+            if (response) {
+                console.log(response)
+                toast.success("Message sent successfully.")
+            }
+
+
+            if (createTicketError) {
+                console.log(response)
+                toast.error("Error: Something went wrong. Please try again.")
+            }
+
+            handleResetForm()
+
+        } catch (error) {
+            console.error(error);
+            toast.error("Error: Something went wrong. Please try again.")
+
+        }
+
+    }
+
+
+    const handleResetForm = () => {
+        setSubject('')
         setEmail('')
         setMessage('')
-    }
+    };
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -46,23 +89,23 @@ export default function ContactPage() {
                                 <CardContent>
                                     <form onSubmit={handleSubmit} className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="name">Name</Label>
-                                            <Input
-                                                id="name"
-                                                placeholder="Your name"
-                                                value={name}
-                                                onChange={(e) => setName(e.target.value)}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
                                             <Label htmlFor="email">Email</Label>
                                             <Input
                                                 id="email"
                                                 type="email"
                                                 placeholder="Your email"
                                                 value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
+                                                required
+                                                onChange={(e: ChangeEvent) => setEmail((e.target as HTMLInputElement).value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="name">Subject</Label>
+                                            <Input
+                                                id="Subject"
+                                                placeholder="Enter subject"
+                                                value={subject}
+                                                onChange={(e: ChangeEvent) => setSubject((e.target as HTMLInputElement).value)}
                                                 required
                                             />
                                         </div>
@@ -72,11 +115,25 @@ export default function ContactPage() {
                                                 id="message"
                                                 placeholder="Your message"
                                                 value={message}
-                                                onChange={(e) => setMessage(e.target.value)}
+                                                onChange={(e: ChangeEvent) => setMessage((e.target as HTMLInputElement).value)}
                                                 required
                                             />
                                         </div>
-                                        <Button type="submit" className="w-full">Send Message</Button>
+                                        <Button
+                                            disabled={!auth.accessToken || isCreatingTicket}
+                                            type="submit"
+                                            className={`
+                                                ${!auth.accessToken ? 'cursor-not-allowed bg-gray-300 text-gray-500' : ''}
+                                                ${isCreatingTicket ? 'cursor-wait' : ''}
+                                             `}>
+                                            {
+                                                !auth.accessToken ? 'Login to Send Message' : (
+                                                    isCreatingTicket ? (
+                                                        <FaSpinner className="animate-spin h-5 w-5" />
+                                                    ) : 'Send Message'
+                                                )
+                                            }
+                                        </Button>
                                     </form>
                                 </CardContent>
                             </Card>

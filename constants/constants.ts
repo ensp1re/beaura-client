@@ -1,7 +1,65 @@
-import { IAspectRatioOption, IBenefitProps, IImageHome, NavLink } from "@/interfaces/root.interface";
+import {
+  IAspectRatioOption,
+  IBenefitProps,
+  IImageHome,
+  NavLink,
+} from "@/interfaces/root.interface";
 import { BiCreditCard } from "react-icons/bi";
 import { FaHome, FaImage } from "react-icons/fa";
 import { RxScissors } from "react-icons/rx";
+
+export interface IPlan {
+  name: string;
+  price: string;
+  description: string;
+  features: string[];
+  cta: string;
+  link: string;
+  credits?: number;
+}
+
+export const plans: IPlan[] = [
+  {
+    name: "Free",
+    price: "$0",
+    description: "For very small teams",
+    features: [
+      "5 credits per month",
+      "Basic transformations",
+      "Standard resolution",
+    ],
+    cta: "Start for free",
+    link: "/transformation/create",
+    credits: 5,
+  },
+  {
+    name: "Plus",
+    price: "$9.99/month",
+    description: "For growing teams",
+    features: [
+      "25 credits per month",
+      "Advanced transformations",
+      "HD resolution output",
+    ],
+    cta: "Continue with Plus",
+    link: "/checkout?plan=plus",
+    credits: 50,
+  },
+  {
+    name: "Pro",
+    price: "$19.99/month",
+    description: "For scaling businesses",
+    features: [
+      "100 credits per month",
+      "Premium transformations",
+      "4K resolution output",
+      "Priority support",
+    ],
+    cta: "Continue with Pro",
+    link: "/checkout?plan=premium",
+    credits: 100,
+  },
+];
 
 export const navLinks: NavLink[] = [
   {
@@ -74,7 +132,6 @@ export const premiumPlanBenefits: IBenefitProps[] = [
     isIncluded: true,
   },
 ];
-
 
 export const images: IImageHome[] = [
   {
@@ -159,8 +216,6 @@ export const images: IImageHome[] = [
   },
 ];
 
-
-
 export const aspectRatioOptions: { [key: string]: IAspectRatioOption } = {
   "1:1": {
     aspectRatio: "1:1",
@@ -193,32 +248,34 @@ export const reviews = [
     image: "/assets/ava2.jpg",
     username: "sophia",
     nickname: "Sophia",
-    review: "Fantastic app! It has transformed my look completely. Highly recommend!",
+    review:
+      "Fantastic app! It has transformed my look completely. Highly recommend!",
   },
   {
     image: "/assets/ava3.jpg",
     username: "emma",
     nickname: "Emma",
-    review: "Great experience! The transformations are very realistic and fun to try.",
+    review:
+      "Great experience! The transformations are very realistic and fun to try.",
   },
-]
+];
 
 export const planCredits: {
-  free: number,
-  plus: number,
-  premium: number,
+  free: number;
+  plus: number;
+  pro: number;
 } = {
   free: 5,
-  plus: 25,
-  premium: 100,
-}
+  plus: 50,
+  pro: 100,
+};
 
 export const planCosts: {
-  free: number,
-  plus: number,
-  premium: number,
+  free: number;
+  plus: number;
+  pro: number;
 } = {
   free: 0,
-  plus: 5.99,
-  premium: 14.99,
-}
+  plus: 9.99,
+  pro: 17.99,
+};

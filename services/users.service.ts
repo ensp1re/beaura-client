@@ -29,6 +29,13 @@ export const usersApi = api.injectEndpoints({
         body: dto,
       }),
     }),
+
+    getAllUsers: build.query({
+      query: () => ({
+        url: `users/all`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -37,4 +44,5 @@ export const {
   useGetUserByUsernameQuery,
   useGetUserByEmailQuery,
   useUpdateUserByIdMutation,
+  useGetAllUsersQuery,
 } = usersApi;
