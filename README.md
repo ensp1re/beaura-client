@@ -1,6 +1,6 @@
 # BeAura ✨💇‍♂️💇‍♀️
 
-Welcome to **BeAura**! An AI-powered tool to help you find the best haircut for you. This project is currently focused on the frontend, with backend integration coming soon.
+Welcome to **BeAura**! An AI-powered tool to help you find the best haircut for you. This project is currently focused on the frontend, with backend integration based on NestJs.
 
 ## Tech Stack 🛠️
 
@@ -8,6 +8,7 @@ Welcome to **BeAura**! An AI-powered tool to help you find the best haircut for 
 - **React**: A JavaScript library for building user interfaces.
 - **Yup**: A JavaScript schema builder for value parsing and validation.
 - **Shadcn**: A component library for building beautiful and accessible user interfaces.
+- **Tailwind**: A utility-first CSS framework for rapidly building custom user interfaces.
 
 ## Project Structure 📁
 
@@ -17,23 +18,26 @@ Welcome to **BeAura**! An AI-powered tool to help you find the best haircut for 
 ## Getting Started 🚀
 
 1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/yourusername/beaura-client.git
-    cd beaura-client
-    ```
+
+   ```bash
+   git clone https://github.com/yourusername/beaura-client.git
+   cd beaura-client
+   ```
 
 2. **Install dependencies**:
-    ```bash
-    npm install
-    ```
+
+   ```bash
+   npm install
+   ```
 
 3. **Run the development server**:
-    ```bash
-    npm run dev
-    ```
+
+   ```bash
+   npm run dev
+   ```
 
 4. **Open your browser**:
-    Navigate to [http://localhost:3000](http://localhost:3000) to see the app in action.
+   Navigate to [http://localhost:3000](http://localhost:3000) to see the app in action.
 
 ## Contributing 🤝
 
